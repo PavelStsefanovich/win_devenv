@@ -1,0 +1,71 @@
+vars:
+  acc_name: stse.pavell
+  acc_root_dir: null
+
+powershell:
+  profiles:
+  - name: pwsh
+    source: .\conf\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
+    destingation: $HOME\Documents\PowerShell
+  - name: powershell
+    source: .\conf\ps_profiiles\powershell\Microsoft.PowerShell_profile.ps1
+    destingation: $HOME\Documents\WindowsPowerShell
+
+registry_tweaks:
+  - name: taskbar_buttons
+    description: "Setting taskbar buttons: 'Show on all screens'"
+    reg_key: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    reg_property: MMTaskbarMode
+    reg_property_type: DWORD
+    reg_property_value: 0
+  - name: cortana_icon
+    description: "Removing Cortana icon"
+    reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Search
+    reg_property: SearchboxTaskbarMode
+    reg_property_type: DWORD
+    reg_property_value: 0
+  - name: people_icon
+    description: "Removing People icon"
+    reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
+    reg_property: PeopleBand
+    reg_property_type: DWORD
+    reg_property_value: 0
+  - name: task_view_icon
+    description: "Removing task view icon"
+    reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    reg_property: ShowTaskViewButton
+    reg_property_type: DWORD
+    reg_property_value: 0
+  - name: show_file_extensions
+    description: "Setting file extensions: 'Show'"
+    reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    reg_property: HideFileExt
+    reg_property_type: DWORD
+    reg_property_value: 0
+  - name: color_prevalence
+    description: "Setting color prevalence: StartMenu, Taskbar and Action Center"
+    reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+    reg_property: ColorPrevalence
+    reg_property_type: DWORD
+    reg_property_value: 1
+    #(ps)
+
+packages:
+  local:
+  - name: DisplayLink Graphics Driver
+    source: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
+    interactive: true
+
+  package_manager:
+  - choco:
+    - name: notepadplusplus
+    - name: vscode
+    - name: beyondcompare
+    - name: "git.install"
+    - name: git
+      args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
+    - name: openssh
+      args: /SSHAgentFeature
+  - PowerShellGet:
+    - name: LocationStack
+    

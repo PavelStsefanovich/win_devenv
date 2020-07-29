@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param (
-    [string]$config_file_path
+    [string]$config_file_path,
+    [string]$google_backupandsync_root_dir
 )
 
 
@@ -26,7 +27,8 @@ function abspath ($parent = $pwd.Path) {
 
 function load_main_config {
     param (
-        [string]$config_file_path
+        [string]$config_file_path,
+        [string]$google_backupandsync_root_dir
     )
 
     if ($config_file_path) {
@@ -34,7 +36,7 @@ function load_main_config {
     }
     else {
         $script_base_name = (gi $PSCommandPath).BaseName
-        $config_file_path = Join-Path $PSScriptRoot "$script_base_name`.yml"
+        $config_file_path = Join-Path "$PSScriptRoot\conf" "$script_base_name`.yml"
     }
 
     Write-Log "Installing module: powershell-yaml"
@@ -46,8 +48,41 @@ function load_main_config {
     }
 
     Write-Log "Loading configuration from '$config_file_path'"
-    $config = cat $config_file_path -Raw | ConvertFrom-Yaml
+    $vars = (cat $config_file_path -Raw | ConvertFrom-Yaml).vars
 
+    ## set config vars
+    if (!(Test-Path $vars.acc_root_dir)) {
+        if (!$google_backupandsync_root_dir) {
+            $google_backupandsync_root_dir = $PSScriptRoot
+            while ($google_backupandsync_root_dir -notlike "*\$($vars.acc_name)") {
+                $google_backupandsync_root_dir = Split-Path $google_backupandsync_root_dir
+                if (!$google_backupandsync_root_dir) {
+                    Write-Log -Level ERROR -Message "Unable to determine Google Backup & Sync root directory"
+                    Write-Log "Use parameter {google_backupandsync_root_dir} to specify"
+                    Quit 1
+                }
+            }
+        }
+    }
+
+    $vars.google_backupandsync_root_dir = $google_backupandsync_root_dir    
+    $raw_config = cat $config_file_path
+    $parsed_config = @()
+
+    foreach ($line in $raw_config) {        
+        $matched_placeholders = Select-String '\<(\w+)\>' -InputObject $line -AllMatches | % { $_.matches }
+
+        foreach ($placeholder in $matched_placeholders.value) {
+            $var_name = $placeholder.Trim('<>')
+            if ($var_name -in $vars.keys) {
+                $line = $line.Replace($placeholder, $vars.$var_name)
+            }
+        }
+
+        $parsed_config += $line
+    }
+
+    $config = $parsed_config
     return $config
 }
 
@@ -83,7 +118,9 @@ Write-Log -Level info 'Logger is up'
 
 ### Load main config
 try {
-    $CONFIG = load_main_config -config_file_path:$config_file_path
+    $CONFIG = load_main_config `
+                -config_file_path:$config_file_path `
+                -google_backupandsync_root_dir:$google_backupandsync_root_dir
 }
 catch {
     Write-Log -Level ERROR -Message $_.Exception.Message
@@ -91,7 +128,7 @@ catch {
     Quit 1
 }
 
-$CONFIG
+
 
 
 ### Remove logger and exit
