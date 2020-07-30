@@ -9,16 +9,19 @@ win_optional_features: null
 
 powershell:
   script: .\scripts\powershell.ps1
-  profiles:
-  - name: pwsh
-    source: .\files\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
-    destingation: $HOME\Documents\PowerShell
-  - name: powershell
-    source: .\files\ps_profiiles\powershell\Microsoft.PowerShell_profile.ps1
-    destingation: $HOME\Documents\WindowsPowerShell
+  config:
+    profiles:
+    - name: pwsh
+      source: .\files\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
+      destingation: $HOME\Documents\PowerShell
+    - name: powershell
+      source: .\files\ps_profiiles\powershell\Microsoft.PowerShell_profile.ps1
+      destingation: $HOME\Documents\WindowsPowerShell
 
 
 registry_tweaks:
+  script: .\scripts\registry.ps1
+  config:
   # ui customizations
   - name: taskbar_buttons
     description: "Setting taskbar buttons: 'Show on all screens'"
@@ -98,7 +101,6 @@ registry_tweaks:
     reg_property: '*'
     reg_property_type: BINARY
     reg_property_value: '[12]:0'
-  
 
   # privacy
   - name: advertising_id
@@ -143,7 +145,7 @@ registry_tweaks:
 
 utils:
   script: .\scripts\utils.ps1
-  utils:
+  config:
   - powercfg: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
   - dism.exe: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
   - dism.exe: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
@@ -151,9 +153,9 @@ utils:
 
 
 packages:
-  local:
-    script: .\scripts\local_package.ps1
-    packages:
+  script: .\scripts\packages.ps1
+  config:
+    local:
     - name: DisplayLink Graphics Driver
       installer: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
       # args: '/norestart'
@@ -161,25 +163,26 @@ packages:
     - name: Samsung Dual Curve Monitors Driver
       installer: .\bin\C27F591.exe
       interactive: true
-
-  package_manager:
-  - name: Chocolatey
-    script: .\scripts\choco.ps1
-    packages:
-    - name: notepadplusplus
-    - name: vscode
-    - name: beyondcompare
-    - name: "git.install"
-    - name: git
-      args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
-    # - name: openssh
-    #   args: /SSHAgentFeature
-  - name: PowerShellGet
-    script: .\scripts\psget.ps1
-    packages:
-    - name: LocationStack
+    package_manager:
+    - name: Chocolatey
+      script: .\scripts\choco.ps1
+      packages:
+      - name: notepadplusplus
+      - name: vscode
+      - name: beyondcompare
+      - name: "git.install"
+      - name: git
+        args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
+      # - name: openssh
+      #   args: /SSHAgentFeature
+    - name: PowerShellGet
+      script: .\scripts\psget.ps1
+      packages:
+      - name: LocationStack
 
 tools_config:
+  script: .\scripts\tools.ps1
+  config:
   - vscode:
       script: .\scripts\vscode.ps1
       extensions:
