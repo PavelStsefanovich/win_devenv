@@ -1,7 +1,17 @@
-[CmdletBinding()]
 param (
-    [string]$vscode_config_filepath = $(Join-Path (Split-Path $PSCommandPath) 'vscode.extensions.conf')
+    $CONFIG
 )
+
+
+Write-Log -Level info "Running $(Split-Path $PSCommandPath -leaf)"
+$CONFIG
+Write-Log -Level info "Finished $(Split-Path $PSCommandPath -leaf)"
+exit
+
+# [CmdletBinding()]
+# param (
+#     [string]$vscode_config_filepath = $(Join-Path (Split-Path $PSCommandPath) 'vscode.extensions.conf')
+# )
 
 $ErrorActionPreference = 'Stop'
 $install = $true

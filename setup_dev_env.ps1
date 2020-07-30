@@ -83,7 +83,7 @@ Write-Log -Level info 'Logger is up'
 
 ### Load main config
 try {
-    $CONFIG = load_main_config -config_file_path:$config_file_path
+    $MAIN_CONFIG = load_main_config -config_file_path:$config_file_path
 }
 catch {
     Write-Log -Level ERROR -Message $_.Exception.Message
@@ -91,7 +91,13 @@ catch {
     Quit 1
 }
 
-$CONFIG
+# TODO needs error handling
+foreach ($stage in $MAIN_CONFIG.keys) {
+    if ($stage -ne 'vars') {
+        . (Resolve-Path $MAIN_CONFIG.$stage.script).Path -CONFIG $MAIN_CONFIG.$stage.config
+    }
+}
+
 
 
 ### Remove logger and exit
