@@ -46,7 +46,7 @@ function load_main_config {
     }
 
     Write-Log "Loading configuration from '$config_file_path'"
-    $config = cat $config_file_path -Raw | ConvertFrom-Yaml
+    $config = cat $config_file_path -Raw | ConvertFrom-Yaml -Ordered
 
     return $config
 }
