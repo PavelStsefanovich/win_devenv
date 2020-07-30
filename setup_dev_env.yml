@@ -1,7 +1,9 @@
 vars: null
 
 
-win_optional_features: null
+win_optional_features:
+  script: .\scripts\features.ps1
+  config: null
   # for use with Enable-WindowsOptionalFeature
   # - name: VirtualMachinePlatform
   #   options: all,online
@@ -166,7 +168,7 @@ packages:
     package_manager:
     - name: Chocolatey
       script: .\scripts\choco.ps1
-      packages:
+      config:
       - name: notepadplusplus
       - name: vscode
       - name: beyondcompare
@@ -177,7 +179,7 @@ packages:
       #   args: /SSHAgentFeature
     - name: PowerShellGet
       script: .\scripts\psget.ps1
-      packages:
+      config:
       - name: LocationStack
 
 tools_config:
@@ -185,7 +187,8 @@ tools_config:
   config:
   - vscode:
       script: .\scripts\vscode.ps1
-      extensions:
-      - mhutchie.git-graph
-      - ms-vscode.atom-keybindings
-      - ms-vscode.powershell
+      config:
+        extensions:
+        - mhutchie.git-graph
+        - ms-vscode.atom-keybindings
+        - ms-vscode.powershell
