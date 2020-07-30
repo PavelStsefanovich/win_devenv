@@ -1,7 +1,14 @@
 vars: null
 
 
+win_optional_features: null
+  # for use with Enable-WindowsOptionalFeature
+  # - name: VirtualMachinePlatform
+  #   options: all,online
+
+
 powershell:
+  script: .\scripts\powershell.ps1
   profiles:
   - name: pwsh
     source: .\files\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
@@ -134,21 +141,31 @@ registry_tweaks:
     reg_property_value: 0  
 
 
-power_settings:
+utils:
+  script: .\scripts\utils.ps1
+  utils:
   - powercfg: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
+  - dism.exe: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+  - dism.exe: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+  - wsl: --set-default-version 2
 
 
 packages:
   local:
-  - name: DisplayLink Graphics Driver
-    source: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
-    interactive: true
-  - name: Samsung Dual Curve Monitors Driver
-    source: .\bin\C27F591.exe
-    interactive: true
+    script: .\scripts\local_package.ps1
+    packages:
+    - name: DisplayLink Graphics Driver
+      installer: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
+      # args: '/norestart'
+      interactive: true
+    - name: Samsung Dual Curve Monitors Driver
+      installer: .\bin\C27F591.exe
+      interactive: true
 
   package_manager:
-  - choco:
+  - name: Chocolatey
+    script: .\scripts\choco.ps1
+    packages:
     - name: notepadplusplus
     - name: vscode
     - name: beyondcompare
@@ -157,5 +174,15 @@ packages:
       args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
     # - name: openssh
     #   args: /SSHAgentFeature
-  - PowerShellGet:
+  - name: PowerShellGet
+    script: .\scripts\psget.ps1
+    packages:
     - name: LocationStack
+
+tools_config:
+  - vscode:
+      script: .\scripts\vscode.ps1
+      extensions:
+      - mhutchie.git-graph
+      - ms-vscode.atom-keybindings
+      - ms-vscode.powershell
