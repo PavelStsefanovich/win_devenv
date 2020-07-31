@@ -16,26 +16,10 @@ function Quit ($exit_code = 0) {
     exit $exit_code
 }
 
-function abspath ($parent = $pwd.Path) {
-    ## convert to absolute path
-    process {        
-        if ([System.IO.Path]::IsPathRooted($_)) { $_ }
-        else { Join-Path $parent $_ }
-    }
-}
-
 function load_main_config {
     param (
-        [string]$config_file_path
+        [string]$config_file_path = 'config.yml'
     )
-
-    if ($config_file_path) {
-        $config_file_path = $config_file_path | abspath
-    }
-    else {
-        $script_base_name = (gi $PSCommandPath).BaseName
-        $config_file_path = Join-Path $PSScriptRoot "$script_base_name`.yml"
-    }
 
     Write-Log "Installing module: powershell-yaml"
     if (!(Get-Module powershell-yaml)) {
@@ -56,12 +40,14 @@ function load_main_config {
 ########## MAIN
 $ErrorActionPreference = 'stop'
 $script:start_time = Get-Date
+Import-Module .\scripts\util_functions.psm1 -Force -DisableNameChecking
+restart_elevated -script_args $PSBoundParameters
 
 
 ### Init Logger
 Write-Host "initializing logger" -ForegroundColor DarkGray
 $log_file_name = (get-date $script:start_time -f 'yyyy-MM-ddTHH-mm-ss'), ((gi $PSCommandPath).BaseName + '.log') -join ('_')
-$log_file_path = Join-Path (mkdir (Join-Path $HOME '.logs') -Force).FullName $log_file_name
+$log_file_path = Join-Path (mkdir (Join-Path $PSScriptRoot '.logs') -Force).FullName $log_file_name
 if (!(Get-Module Logging)) {
     if (!(Get-Module Logging -ListAvailable)) {
         Install-Module Logging -Force -Scope CurrentUser
@@ -71,7 +57,7 @@ if (!(Get-Module Logging)) {
 Add-LoggingTarget -Name Console -Configuration @{
     Level        = 'INFO'
     Format       = ' %{level}: %{message}'
-    ColorMapping = @{DEBUG = 'BLUE'; INFO = 'White' ; WARNING = 'Yellow'; ERROR = 'Red' }
+    ColorMapping = @{DEBUG = 'BLUE'; INFO = 'DarkGreen' ; WARNING = 'Yellow'; ERROR = 'Red' }
 }
 Add-LoggingTarget -Name File -Configuration @{
     Level  = 'DEBUG'
@@ -82,6 +68,14 @@ Write-Log -Level info 'Logger is up'
 
 
 ### Load main config
+if ($config_file_path) {
+    $config_file_path = $config_file_path | abspath
+}
+else {
+    $script_base_name = (gi $PSCommandPath).BaseName
+    $config_file_path = Join-Path $PSScriptRoot "$script_base_name`.yml"
+}
+
 try {
     $MAIN_CONFIG = load_main_config -config_file_path:$config_file_path
 }
@@ -91,13 +85,14 @@ catch {
     Quit 1
 }
 
+
+### Execute scripts
 # TODO needs error handling
 foreach ($stage in $MAIN_CONFIG.keys) {
     if ($stage -ne 'vars') {
         . (Resolve-Path $MAIN_CONFIG.$stage.script).Path -CONFIG $MAIN_CONFIG.$stage.config
     }
 }
-
 
 
 ### Remove logger and exit

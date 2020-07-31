@@ -1,4 +1,7 @@
-logs/*
+*logs/*
 bin/*
 t1.yml
 example*.yml
+test*
+check*
+push*
