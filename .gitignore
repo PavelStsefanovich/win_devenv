@@ -5,3 +5,5 @@ example*.yml
 test*
 check*
 push*
+*copy*
+notes.txt
