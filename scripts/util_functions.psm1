@@ -67,3 +67,10 @@ function abspath ($parent = $pwd.Path) {
         else { Join-Path $parent $_ }
     }
 }
+
+function escapepath () {
+    ## escape backslashes
+    process {        
+        $_.replace('\','\\')
+    }
+}
