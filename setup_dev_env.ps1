@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param (
-    [string]$config_file_path,
-    [string]$log_file_path
+    [string]$config_file_path
 )
 
 
@@ -21,13 +20,39 @@ function Quit ($exit_code = 0, $exception) {
     exit $exit_code
 }
 
+function logger_init ($log_file_path) {
+    Write-Host "initializing logger" -ForegroundColor DarkGray
+    if (!$log_file_path) {
+        $log_file_name = $timestamp, ($main_script_basename + '.log') -join ('_')
+        $log_file_path = Join-Path (mkdir (Join-Path $PWD.path '.logs') -Force).FullName $log_file_name
+    }
+    $log_file_path = $log_file_path | abspath
+
+    if (!(Get-Module Logging)) {
+        if (!(Get-Module Logging -ListAvailable)) {
+            Install-Module Logging -Force -Scope CurrentUser
+        }
+        Import-Module Logging -DisableNameChecking
+    }
+
+    Add-LoggingTarget -Name Console -Configuration @{
+        Level        = 'INFO'
+        Format       = ' %{level}: %{message}'
+        ColorMapping = @{DEBUG = 'BLUE'; INFO = 'DarkGreen' ; WARNING = 'Yellow'; ERROR = 'Red' }
+    }
+    Add-LoggingTarget -Name File -Configuration @{
+        Level  = 'DEBUG'
+        Format = '[%{timestamp}] [%{filename:15}, ln.%{lineno:-3}] [%{level:7}] %{message}'
+        Path   = $log_file_path
+    }
+
+    return (Get-LoggingTarget File).Path
+}
+
 function stage_manager {
     param (
         [Parameter(ParameterSetName = "init")]
         [switch]$init,
-
-        # [Parameter(Mandatory = $true, ParameterSetName = "init")]
-        # [string]$log_file_path,
 
         [Parameter(ParameterSetName = "config")]
         $config,
@@ -36,21 +61,33 @@ function stage_manager {
         [string]$config_file_path
     )
 
-    $stage_control_filepath = Join-Path $PSScriptRoot ".$($script:main_script_basename).stage"
-    $stage_control_file_exists = Test-Path $stage_control_filepath
+    try {
+        $stage_control_filepath = Join-Path $PSScriptRoot ".$($script:main_script_basename).stage"
+        if (Test-Path $stage_control_filepath) {
+            $stage_config = cat $stage_control_filepath -Raw | ConvertFrom-StringData
+        }
+    }
+    catch {
+        Write-Error "Failed to load .stage file"
+        Write-Error $_
+    }
+
     $stages = @()
 
     if ($init) {
         try {
-            if ($stage_control_file_exists) {
-                $log_file_path = (cat $stage_control_filepath -Raw | ConvertFrom-Yaml -Ordered).$log_file_path
-                return $log_file_path
+            if ($stage_config) {
+                $log_file_path = $stage_config.log_file_path
+                logger_init $log_file_path | Out-Null
+                Write-Log '== CONTINUING LOG =='
             }
             else {
-                ni $stage_control_filepath -ItemType File -Force | Out-Null
+                $log_file_path = logger_init
+                "log_file_path=$log_file_path" | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
                 Write-Log '<== BEGINNING OF LOG ==>'
-                return (Get-LoggingTarget File).Path
             }
+
+            return $null
         }
         catch {
             Quit 1 $_
@@ -91,39 +128,15 @@ Import-Module .\scripts\util_functions.psm1 -Force -DisableNameChecking
 restart_elevated -script_args $PSBoundParameters
 
 
-### Init Logger
-Write-Host "initializing logger" -ForegroundColor DarkGray
-if (!$log_file_path) {
-    $log_file_name = $timestamp, ($main_script_basename + '.log') -join ('_')
-    $log_file_path = Join-Path (mkdir (Join-Path $PWD.path '.logs') -Force).FullName $log_file_name
-}
-$log_file_path = $log_file_path | abspath
+### Init stage manager
+stage_manager -init
 
-if (!(Get-Module Logging)) {
-    if (!(Get-Module Logging -ListAvailable)) {
-        Install-Module Logging -Force -Scope CurrentUser
-    }
-    Import-Module Logging -DisableNameChecking
-}
-
-Add-LoggingTarget -Name Console -Configuration @{
-    Level        = 'INFO'
-    Format       = ' %{level}: %{message}'
-    ColorMapping = @{DEBUG = 'BLUE'; INFO = 'DarkGreen' ; WARNING = 'Yellow'; ERROR = 'Red' }
-}
-Add-LoggingTarget -Name File -Configuration @{
-    Level  = 'DEBUG'
-    Format = '[%{timestamp}] [%{filename:15}, ln.%{lineno:-3}] [%{level:7}] %{message}'
-    Path   = $log_file_path
-}
+# ### Init Logger
+# logger_init -log_file_path:$log_file_path
 
 
 ### Load modules
 load_modules powershell-yaml
-
-
-### Init stage manager
-$log_file_path = stage_manager -init
 
 
 ### Load main config
