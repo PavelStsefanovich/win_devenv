@@ -69,7 +69,7 @@ function stage_manager {
     }
     catch {
         Write-Error "Failed to load .stage file"
-        Write-Error $_
+        throw $_
     }
 
     $stages = @()
@@ -90,7 +90,8 @@ function stage_manager {
             return $null
         }
         catch {
-            Quit 1 $_
+            Write-Error "Failed to initiate logger"
+            throw $_
         }
     }
 
@@ -108,13 +109,34 @@ function stage_manager {
 
 function load_modules ([string[]]$modules) {
     foreach ($module_name in $modules) {
-        Write-Log "Installing module: $module_name"
-        if (!(Get-Module $module_name)) {
-            if (!(Get-Module $module_name -ListAvailable)) {
-                Install-Module $module_name -Force -Scope CurrentUser
+        try {
+            Write-Log "Installing module: $module_name"
+            if (!(Get-Module $module_name)) {
+                if (!(Get-Module $module_name -ListAvailable)) {
+                    Install-Module $module_name -Force -Scope CurrentUser
+                }
+                Import-Module $module_name -DisableNameChecking
             }
-            Import-Module $module_name -DisableNameChecking
         }
+        catch {
+            Quit 1 $_
+        }
+    }
+}
+
+function load_main_config ($config_file_path) {
+    if (!$config_file_path) {
+        $config_file_path = Join-Path $PSScriptRoot "$main_script_basename`.yml"
+    }
+    $config_file_path = $config_file_path | abspath
+
+    try {
+        Write-Log "Loading configuration from '$config_file_path'"
+        $main_config = cat $config_file_path -Raw | ConvertFrom-Yaml -Ordered
+        return $main_config
+    }
+    catch {
+        Quit 1 $_
     }
 }
 
@@ -131,27 +153,13 @@ restart_elevated -script_args $PSBoundParameters
 ### Init stage manager
 stage_manager -init
 
-# ### Init Logger
-# logger_init -log_file_path:$log_file_path
-
 
 ### Load modules
 load_modules powershell-yaml
 
 
 ### Load main config
-if (!$config_file_path) {
-    $config_file_path = Join-Path $PSScriptRoot "$main_script_basename`.yml"
-}
-$config_file_path = $config_file_path | abspath
-
-try {
-    Write-Log "Loading configuration from '$config_file_path'"
-    $MAIN_CONFIG = cat $config_file_path -Raw | ConvertFrom-Yaml -Ordered
-}
-catch {
-    Quit 1 $_
-}
+$MAIN_CONFIG = load_main_config -config_file_path:$config_file_path
 
 
 ### Execute scripts
