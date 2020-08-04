@@ -1,15 +1,18 @@
-vars: null
+vars:   # 'vars' key must appear first
+  config_file_path: ''
 
 
 win_optional_features:
+  restart_required: true
   script: .\scripts\features.ps1
-  config: null
+  config: null  
   # for use with Enable-WindowsOptionalFeature
   # - name: VirtualMachinePlatform
   #   options: all,online
 
 
 powershell:
+  restart_required: false
   script: .\scripts\powershell.ps1
   config:
     profiles:
@@ -22,6 +25,7 @@ powershell:
 
 
 registry_tweaks:
+  restart_required: false
   script: .\scripts\registry.ps1
   config:
   # ui customizations
@@ -146,6 +150,7 @@ registry_tweaks:
 
 
 utils:
+  restart_required: true
   script: .\scripts\utils.ps1
   config:
   - powercfg: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
@@ -155,6 +160,7 @@ utils:
 
 
 packages:
+  restart_required: true
   script: .\scripts\packages.ps1
   config:
     local:
@@ -183,6 +189,7 @@ packages:
       - name: LocationStack
 
 tools_config:
+  restart_required: false
   script: .\scripts\tools.ps1
   config:
   - vscode:
