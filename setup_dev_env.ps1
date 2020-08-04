@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param (
-    [string]$config_file_path
+    [string]$config_file_path,
+    [switch]$from_beginning
 )
 
 
@@ -42,7 +43,7 @@ function logger_init ($log_file_path) {
     }
     Add-LoggingTarget -Name File -Configuration @{
         Level  = 'DEBUG'
-        Format = '[%{timestamp}] [%{filename:15}, ln.%{lineno:-3}] [%{level:7}] %{message}'
+        Format = '[%{timestamp}] [%{filename:25}, ln.%{lineno:-3}] [%{level:7}] %{message}'
         Path   = $log_file_path
     }
 
@@ -55,10 +56,16 @@ function stage_manager {
         [switch]$init,
 
         [Parameter(ParameterSetName = "config")]
-        $config,
+        $main_config,
 
-        [Parameter(ParameterSetName = "config")]
-        [string]$config_file_path
+        [Parameter(ParameterSetName = "restart")]
+        [switch]$restart,
+
+        [Parameter(Mandatory = $true, ParameterSetName = "restart")]
+        [string]$current_stage,
+
+        [Parameter(ParameterSetName = "cleanup")]
+        [switch]$cleanup
     )
 
     try {
@@ -72,8 +79,7 @@ function stage_manager {
         throw $_
     }
 
-    $stages = @()
-
+    ## ParameterSetName == "init"
     if ($init) {
         try {
             if ($stage_config) {
@@ -95,16 +101,37 @@ function stage_manager {
         }
     }
 
+    ## ParameterSetName == "restart"
+    if ($restart) {
+        $stage_config.current_stage = $current_stage
+        $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
+        exit
+        #TODO add scheduled task registration
+    }    
 
-
-    if ($config) {
-        # foreach ($s) {}
+    ## ParameterSetName == "cleanup"
+    if ($cleanup) {
+        rm $stage_control_filepath -Force | Out-Null
+        return $null
     }
-    #(ps)
-    # if ($stage -ne 'vars') {
 
-    # }
-    #return $stages
+    ## ParameterSetName == "config"
+    $stages_to_run = @()
+
+    if ($main_config) {
+        $all_stages = $main_config.getenumerator().name
+        $current_stage = $stage_config.current_stage
+
+        if (!$current_stage) {
+            $current_stage = $all_stages[0]
+        }
+
+        for ($i = $all_stages.IndexOf($current_stage) + 1; $i -lt $all_stages.Length; $i++) {
+            $stages_to_run += $all_stages[$i]
+        }
+    }
+
+    return $stages_to_run
 }
 
 function load_modules ([string[]]$modules) {
@@ -133,6 +160,7 @@ function load_main_config ($config_file_path) {
     try {
         Write-Log "Loading configuration from '$config_file_path'"
         $main_config = cat $config_file_path -Raw | ConvertFrom-Yaml -Ordered
+        $main_config.vars.config_file_path = $config_file_path
         return $main_config
     }
     catch {
@@ -150,6 +178,12 @@ Import-Module .\scripts\util_functions.psm1 -Force -DisableNameChecking
 restart_elevated -script_args $PSBoundParameters
 
 
+### Drop current progress and start from beginning
+if ($from_beginning) {
+    stage_manager -cleanup
+}
+
+
 ### Init stage manager
 stage_manager -init
 
@@ -163,16 +197,25 @@ $MAIN_CONFIG = load_main_config -config_file_path:$config_file_path
 
 
 ### Execute scripts
-$stages = stage_manager -config $MAIN_CONFIG -config_file_path $config_file_path
+$stages = stage_manager -main_config $MAIN_CONFIG
 
-try {
-    foreach ($stage in $stages) {
+foreach ($stage in $stages) {
+    write-host "Executing script: $($MAIN_CONFIG.$stage.script)" -ForegroundColor Cyan
+    try {
         . (Resolve-Path $MAIN_CONFIG.$stage.script).Path -CONFIG $MAIN_CONFIG.$stage.config
     }
+    catch {
+        # TODO: continue if subscript failed for any reason with errormessage
+        Quit 1 $_
+    }
+
+    if ($MAIN_CONFIG.$stage.restart_required) {
+        write-host "restarting computer" -ForegroundColor Cyan
+        stage_manager -restart -current_stage $stage
+    }
 }
-catch {
-    Quit 1 $_
-}
+
+stage_manager -cleanup
 
 
 ### Remove logger and exit
