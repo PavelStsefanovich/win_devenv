@@ -16,12 +16,12 @@ function restart_elevated {
     }
 
     if (isadmin) {
-        Write-Host 'Running as administrator: OK'
+        Write-Host 'running as administrator: OK' -ForegroundColor DarkGray
         return $null
     }
 
     try {
-        Write-Warning '(!) Running as administrator: NO'
+        Write-Warning '(!) running as administrator: NO'
         Write-Host 'Restarting with elevated permissions'
         sleep 3
 
@@ -73,4 +73,39 @@ function escapepath () {
     process {        
         $_.replace('\','\\')
     }
+}
+
+function system_restart_pending {
+    $isRestartRequired = $false
+
+    if (Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" -EA Ignore) { $isRestartRequired = $true }
+    if (Get-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -EA Ignore) { $isRestartRequired = $true }
+    if (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name PendingFileRenameOperations -EA Ignore) { $isRestartRequired = $true }
+
+    try { 
+        $util = [wmiclass]"\\.\root\ccm\clientsdk:CCM_ClientUtilities"
+        $status = $util.DetermineIfRebootPending()
+        if (($status -ne $null) -and $status.RebootPending) {
+            $isRestartRequired = $true
+        }
+    }
+    catch { }
+
+    return $isRestartRequired
+}
+
+function request_consent ([string]$question) {
+    do {
+        Write-Host "`n (?) $question" -ForegroundColor Yellow
+        $reply = [string]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown").Character
+        if ($reply.tolower() -notin 'y', 'n') {
+            Write-Host "It's a yes/no question."
+        }
+    }
+    while ($reply.tolower() -notin 'y', 'n')
+
+    switch ($reply) {
+        'y' { return $true }
+        'n' { return $false }
+    }   
 }
