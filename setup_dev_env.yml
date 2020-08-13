@@ -153,10 +153,18 @@ utils:
   restart_required: true
   script: .\scripts\utils.ps1
   config:
-  - powercfg: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
-  - dism.exe: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-  - dism.exe: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-  - wsl: --set-default-version 2
+  - exe: powercfg
+    args: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
+    description: "Setting close lid action when on AC power: 'do nothing'"
+  - exe: dism
+    args: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+    description: "Installing Windows feature: 'Microsoft-Windows-Subsystem-Linux'"
+  - exe: dism
+    args: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+    description: "Installing Windows feature: 'VirtualMachinePlatform'"
+  - exe: wsl
+    args: --set-default-version 2
+    description: "Setting default WSL version: '2'"
 
 
 packages:
