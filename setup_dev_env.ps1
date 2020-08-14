@@ -218,7 +218,7 @@ function show_report ($report) {
 $ErrorActionPreference = 'stop'
 $timestamp = get-date -f 'yyyy-MM-ddTHH-mm-ss'
 $script:main_script_basename = (gi $PSCommandPath).BaseName
-Import-Module .\scripts\util_functions.psm1 -Force -DisableNameChecking
+Import-Module $PSScriptRoot\scripts\util_functions.psm1 -Force -DisableNameChecking
 restart_elevated -script_args $PSBoundParameters
 
 
@@ -244,7 +244,8 @@ $MAIN_CONFIG = load_main_config -config_file_path:$config_file_path
 $stages = stage_manager -main_config $MAIN_CONFIG
 
 foreach ($stage in $stages) {
-    write-host "Executing script: $($MAIN_CONFIG.$stage.script)" -ForegroundColor Cyan
+    Write-Log "Executing script: $($MAIN_CONFIG.$stage.script)"
+    Wait-Logging
     try {
         . (Resolve-Path $MAIN_CONFIG.$stage.script).Path -CONFIG $MAIN_CONFIG.$stage.config
         stage_manager -update_report "$stage`:ok"
