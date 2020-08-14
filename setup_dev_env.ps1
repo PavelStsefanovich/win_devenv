@@ -65,9 +65,16 @@ function stage_manager {
         [string]$current_stage,
 
         [Parameter(ParameterSetName = "cleanup")]
-        [switch]$cleanup
+        [switch]$cleanup,
+
+        [Parameter(ParameterSetName = "update_report")]
+        [string]$update_report,
+
+        [Parameter(ParameterSetName = "get_report")]
+        [switch]$get_report
     )
 
+    # .stage file
     try {
         $stage_control_filepath = Join-Path $PSScriptRoot ".$($script:main_script_basename).stage"
         if (Test-Path $stage_control_filepath) {
@@ -113,6 +120,18 @@ function stage_manager {
     if ($cleanup) {
         rm $stage_control_filepath -Force -ErrorAction SilentlyContinue | Out-Null
         return $null
+    }
+
+    ## ParameterSetName == "report"
+    if ($update_report) {
+        $stage_config.stage_report = ($stage_config.stage_report, $update_report -join (';')).TrimStart(';')
+        $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null        
+        return $null
+    }
+
+    ## ParameterSetName == "get_report"
+    if ($get_report) {
+        return $stage_config.stage_report.split('=')
     }
 
     ## ParameterSetName == "config"
@@ -168,21 +187,21 @@ function load_main_config ($config_file_path) {
     }
 }
 
-function show_report ($report_filepath) {
+function show_report ($report) {
     Write-Host ("`n" + "_"*35)
     Write-Host "OVERALL REPORT:" -ForegroundColor White
     try {
-        foreach ($line in cat $report_filepath) {
-            $line_split = $line.split(':')
+        foreach ($stage in $report.split(';')) {
+            $stage_split = $stage.split(':')
             $printline = " "*2
-            $printline += $line_split[0] + ":"
+            $printline += $stage_split[0] + ":"
             $printline += " "*(30 - $printline.Length)
             Write-Host $printline -ForegroundColor White -NoNewline
-            if ($line_split[1] -eq 'ok') {
-                Write-Host $line_split[1] -ForegroundColor Green
+            if ($stage_split[1] -eq 'ok') {
+                Write-Host $stage_split[1] -ForegroundColor Green
             }
             else {
-                Write-Host $line_split[1] -ForegroundColor Red
+                Write-Host $stage_split[1] -ForegroundColor Red
             }
         }
         Write-Host ("_"*35)
@@ -201,9 +220,6 @@ $timestamp = get-date -f 'yyyy-MM-ddTHH-mm-ss'
 $script:main_script_basename = (gi $PSCommandPath).BaseName
 Import-Module .\scripts\util_functions.psm1 -Force -DisableNameChecking
 restart_elevated -script_args $PSBoundParameters
-$report_filepath = Join-Path $PSScriptRoot ".$($script:main_script_basename).report"
-ni $report_filepath -ItemType File -ErrorAction SilentlyContinue | Out-Null
-
 
 
 ### Drop current progress and start from beginning
@@ -231,11 +247,11 @@ foreach ($stage in $stages) {
     write-host "Executing script: $($MAIN_CONFIG.$stage.script)" -ForegroundColor Cyan
     try {
         . (Resolve-Path $MAIN_CONFIG.$stage.script).Path -CONFIG $MAIN_CONFIG.$stage.config
-        "$stage`:ok" | Out-File $report_filepath -Append ascii
+        stage_manager -update_report "$stage`:ok"
     }
     catch {
         Write-Log -Level ERROR -Message $_
-        "$stage`:failed" | Out-File $report_filepath -Append ascii
+        stage_manager -update_report "$stage`:failed"
     }
 
     if ($MAIN_CONFIG.$stage.restart_required) {
@@ -249,10 +265,12 @@ foreach ($stage in $stages) {
 }
 
 
-### Report, cleanup, close log and exit
-stage_manager -cleanup
+### Show overall progress report
 Wait-Logging
-show_report $report_filepath
-rm $report_filepath -Force
+show_report (stage_manager -get_report)
+
+
+### Cleanup, close log and exit
+stage_manager -cleanup
 if (system_restart_pending) {Write-Log -Level WARNING -Message "System restart is pending. You may want to restart computer for changes to take effect"}
 Quit
