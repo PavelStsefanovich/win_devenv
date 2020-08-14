@@ -9,14 +9,16 @@ param (
 ########## FUNCTIONS ####################
 function Quit ($exit_code = 0, $exception) {
     if ($exit_code -ne 0) {
-        Write-Log -Level ERROR -Message $exception.Exception.Message
-        Write-Log -Level DEBUG -Message $exception.InvocationInfo.PositionMessage
+        if ($exception) {
+            Write-Log -Level ERROR -Message $exception.Exception.Message
+            Write-Log -Level DEBUG -Message $exception.InvocationInfo.PositionMessage
+        }
     }
     Write-Log '==> END OF LOG <=='
     $log_file_path = (Get-LoggingTarget File).Path
     Wait-Logging
     Remove-Module Logging -Force
-    Write-Host "Log path: '$log_file_path'" -ForegroundColor Yellow
+    Write-Host "Log path: '$log_file_path'" -ForegroundColor DarkGray
     if ($exit_code -ne 0) { notepad $log_file_path }
     exit $exit_code
 }
@@ -122,7 +124,7 @@ function stage_manager {
         return $null
     }
 
-    ## ParameterSetName == "report"
+    ## ParameterSetName == "update_report"
     if ($update_report) {
         $stage_config.stage_report = ($stage_config.stage_report, $update_report -join (';')).TrimStart(';')
         $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null        
@@ -216,6 +218,7 @@ function show_report ($report) {
 
 ########## MAIN ####################
 $ErrorActionPreference = 'stop'
+$exit_code = 0
 $timestamp = get-date -f 'yyyy-MM-ddTHH-mm-ss'
 $script:main_script_basename = (gi $PSCommandPath).BaseName
 Import-Module $PSScriptRoot\scripts\util_functions.psm1 -Force -DisableNameChecking
@@ -244,10 +247,13 @@ $MAIN_CONFIG = load_main_config -config_file_path:$config_file_path
 $stages = stage_manager -main_config $MAIN_CONFIG
 
 foreach ($stage in $stages) {
-    Write-Log "Executing script: $($MAIN_CONFIG.$stage.script)"
     Wait-Logging
+
     try {
-        . (Resolve-Path $MAIN_CONFIG.$stage.script).Path -CONFIG $MAIN_CONFIG.$stage.config
+        Write-Log "Running stage: $stage"
+        $stage_script = (Resolve-Path (Join-Path $PSScriptRoot $MAIN_CONFIG.$stage.script)).Path
+        Write-Log "Executing script: $stage_script"
+        . $stage_script -CONFIG $MAIN_CONFIG.$stage.config
         stage_manager -update_report "$stage`:ok"
     }
     catch {
@@ -268,10 +274,14 @@ foreach ($stage in $stages) {
 
 ### Show overall progress report
 Wait-Logging
-show_report (stage_manager -get_report)
+$progress_report = stage_manager -get_report
+show_report $progress_report
+if ($progress_report -like '*failed*') {
+    $exit_code = 2
+}
 
 
 ### Cleanup, close log and exit
 stage_manager -cleanup
 if (system_restart_pending) {Write-Log -Level WARNING -Message "System restart is pending. You may want to restart computer for changes to take effect"}
-Quit
+Quit $exit_code
