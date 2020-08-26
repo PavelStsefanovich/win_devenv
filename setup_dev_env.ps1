@@ -60,11 +60,14 @@ function stage_manager {
         [Parameter(ParameterSetName = "config")]
         $main_config,
 
-        [Parameter(ParameterSetName = "restart")]
+        [Parameter(Mandatory = $true, ParameterSetName = "restart")]
         [switch]$restart,
 
         [Parameter(Mandatory = $true, ParameterSetName = "restart")]
         [string]$current_stage,
+
+        [Parameter(ParameterSetName = "restart")]
+        [hashtable]$bound_parameters,
 
         [Parameter(ParameterSetName = "cleanup")]
         [switch]$cleanup,
@@ -112,14 +115,19 @@ function stage_manager {
 
     ## ParameterSetName == "restart"
     if ($restart) {
+        $scheduled_task_name = $stage_config.continue_after_restart_taskname
+        $scheduled_task_name = continue_after_restart -scriptpath $PSCommandPath -arguments $bound_parameters -task_name $scheduled_task_name
         $stage_config.current_stage = $current_stage
+        $stage_config.continue_after_restart_taskname = $scheduled_task_name
         $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
-        exit
-        #TODO add scheduled task registration
+        Restart-Computer -Force
     }    
 
     ## ParameterSetName == "cleanup"
     if ($cleanup) {
+        if ($stage_config.continue_after_restart_taskname) {
+            Unregister-ScheduledTask -TaskName $stage_config.continue_after_restart_taskname -Confirm:$false -ErrorAction SilentlyContinue
+        }
         rm $stage_control_filepath -Force -ErrorAction SilentlyContinue | Out-Null
         return $null
     }
@@ -250,7 +258,7 @@ foreach ($stage in $stages) {
     Wait-Logging
 
     try {
-        Write-Log "Running stage: $stage"
+        Write-Log "Stage: $($stage.ToUpper())"
         $stage_script = (Resolve-Path (Join-Path $PSScriptRoot $MAIN_CONFIG.$stage.script)).Path
         Write-Log "Executing script: $stage_script"
         . $stage_script -CONFIG $MAIN_CONFIG.$stage.config
@@ -265,7 +273,7 @@ foreach ($stage in $stages) {
         if (system_restart_pending) {
             if (request_consent "System restart is pending. Do you want to restart now?") {
                 Write-Log "Restarting computer"
-                stage_manager -restart -current_stage $stage
+                stage_manager -restart -current_stage $stage -bound_parameters:$PSBoundParameters
             }
         }
     }
