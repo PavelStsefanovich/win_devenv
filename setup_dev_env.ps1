@@ -121,7 +121,7 @@ function stage_manager {
         $stage_config.continue_after_restart_taskname = $scheduled_task_name
         $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
         Restart-Computer -Force
-    }    
+    }
 
     ## ParameterSetName == "cleanup"
     if ($cleanup) {
@@ -135,7 +135,7 @@ function stage_manager {
     ## ParameterSetName == "update_report"
     if ($update_report) {
         $stage_config.stage_report = ($stage_config.stage_report, $update_report -join (';')).TrimStart(';')
-        $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null        
+        $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
         return $null
     }
 
@@ -244,7 +244,7 @@ stage_manager -init
 
 
 ### Load modules
-load_modules powershell-yaml 
+load_modules powershell-yaml
 
 
 ### Load main config

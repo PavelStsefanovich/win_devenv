@@ -5,7 +5,7 @@ vars:   # 'vars' key must appear first
 win_optional_features:
   restart_required: true
   script: .\scripts\features.ps1
-  config: null  
+  config: null
   # for use with Enable-WindowsOptionalFeature
   # - name: VirtualMachinePlatform
   #   options: all,online
@@ -146,7 +146,7 @@ registry_tweaks:
     reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
     reg_property: ShowFrequent
     reg_property_type: DWORD
-    reg_property_value: 0  
+    reg_property_value: 0
 
 
 utils:
@@ -195,6 +195,7 @@ packages:
       script: .\scripts\psget.ps1
       config:
       - name: LocationStack
+
 
 tools_config:
   restart_required: false
