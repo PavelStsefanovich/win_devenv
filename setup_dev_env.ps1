@@ -210,6 +210,9 @@ function show_report ($report) {
             if ($stage_split[1] -eq 'ok') {
                 Write-Host $stage_split[1] -ForegroundColor Green
             }
+            elseif ($stage_split[1] -eq 'skipped') {
+                Write-Host $stage_split[1] -ForegroundColor Yellow
+            }
             else {
                 Write-Host $stage_split[1] -ForegroundColor Red
             }
@@ -259,10 +262,16 @@ foreach ($stage in $stages) {
 
     try {
         Write-Log "Stage: $($stage.ToUpper())"
-        $stage_script = (Resolve-Path (Join-Path $PSScriptRoot $MAIN_CONFIG.$stage.script)).Path
-        Write-Log "Executing script: $stage_script"
-        . $stage_script -CONFIG $MAIN_CONFIG.$stage.config
-        stage_manager -update_report "$stage`:ok"
+        if ($MAIN_CONFIG.$stage.config) {
+            $stage_script = (Resolve-Path (Join-Path $PSScriptRoot $MAIN_CONFIG.$stage.script)).Path
+            Write-Log "Executing script: $stage_script"
+            . $stage_script -CONFIG $MAIN_CONFIG.$stage.config
+            stage_manager -update_report "$stage`:ok"
+        }
+        else {
+            Write-Log "No stage config provided, skipping"
+            stage_manager -update_report "$stage`:skipped"
+        }
     }
     catch {
         Write-Log -Level ERROR -Message $_
