@@ -4,7 +4,7 @@ vars:   # 'vars' key must appear first
 
 win_optional_features:
   restart_required: true
-  script: .\scripts\features.ps1
+  script: .\scripts\winfeatures.ps1
   config: null
   # for use with Enable-WindowsOptionalFeature
   # - name: VirtualMachinePlatform
