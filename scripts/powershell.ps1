@@ -3,7 +3,11 @@ param (
 )
 
 
-Write-Log -Level info "Running $(Split-Path $PSCommandPath -leaf)"
-#$CONFIG
-Write-Log -Level info "Finished $(Split-Path $PSCommandPath -leaf)"
-exit
+$ErrorActionPreference = 'stop'
+
+foreach ($item in $CONFIG.profiles) {
+    Write-Log "- updating profile for '$($item.name)'"
+    $source_filepath = (Resolve-Path (Join-Path $CONFIG.rootdir $item.source)).Path
+    $destination_filepath = $item.destingation.Replace('$HOME',$HOME)
+    cp $source_filepath $destination_filepath -Force
+}
