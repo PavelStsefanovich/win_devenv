@@ -5,7 +5,7 @@ param (
 
 $ErrorActionPreference = 'stop'
 
-foreach ($item in $CONFIG) {
+foreach ($item in $CONFIG.enable) {
     Write-Log "- enabling winfeature '$($item.name)'"    
     $command = "Enable-WindowsOptionalFeature -FeatureName $($item.name) -norestart"
     $options = $item.options.split(',')

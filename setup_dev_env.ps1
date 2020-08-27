@@ -265,6 +265,7 @@ foreach ($stage in $stages) {
         if ($MAIN_CONFIG.$stage.config) {
             $stage_script = (Resolve-Path (Join-Path $PSScriptRoot $MAIN_CONFIG.$stage.script)).Path
             Write-Log "Executing script: $stage_script"
+            $MAIN_CONFIG.$stage.config.add('rootdir', $PSScriptRoot)
             . $stage_script -CONFIG $MAIN_CONFIG.$stage.config
             stage_manager -update_report "$stage`:ok"
         }
