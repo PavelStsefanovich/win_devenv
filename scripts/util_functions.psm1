@@ -4,7 +4,7 @@ function isadmin {
 }
 
 function restart_elevated {
-     
+
     param(
         $script_args,
         [switch]$kill_original,
@@ -31,7 +31,7 @@ function restart_elevated {
         $argline += " -Command cd `"$current_dir`"; `"$script_fullpath`""
 
         $script_args.GetEnumerator() | % {
-            
+
             if ($_.Value -is [boolean]) {
                 $argline += " -$($_.key) `$$($_.value)"
             }
@@ -62,7 +62,7 @@ function restart_elevated {
 
 function abspath ($parent = $pwd.Path) {
     ## convert to absolute path
-    process {        
+    process {
         if ([System.IO.Path]::IsPathRooted($_)) { $_ }
         else { Join-Path $parent $_ }
     }
@@ -70,7 +70,7 @@ function abspath ($parent = $pwd.Path) {
 
 function escapepath () {
     ## escape backslashes
-    process {        
+    process {
         $_.replace('\','\\')
     }
 }
@@ -82,7 +82,7 @@ function system_restart_pending {
     if (Get-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -EA Ignore) { $isRestartRequired = $true }
     if (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name PendingFileRenameOperations -EA Ignore) { $isRestartRequired = $true }
 
-    try { 
+    try {
         $util = [wmiclass]"\\.\root\ccm\clientsdk:CCM_ClientUtilities"
         $status = $util.DetermineIfRebootPending()
         if (($status -ne $null) -and $status.RebootPending) {
@@ -107,7 +107,7 @@ function request_consent ([string]$question) {
     switch ($reply) {
         'y' { return $true }
         'n' { return $false }
-    }   
+    }
 }
 
 function continue_after_restart {
@@ -137,13 +137,13 @@ function continue_after_restart {
         else {
             $action = New-ScheduledTaskAction -Execute (gcm powershell).Source -Argument $argstring
         }
-        
+
         $user = $env:USERDOMAIN, $env:USERNAME -join ('\')
         $trigger = New-ScheduledTaskTrigger -AtLogOn -User $user
         $principal = New-ScheduledTaskPrincipal -UserId $user -RunLevel Highest -LogonType Interactive
-        $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal        
+        $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal
         Register-ScheduledTask $task_name -InputObject $task | out-null
-        
+
         return $task_name
     }
     catch {
