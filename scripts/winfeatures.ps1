@@ -12,6 +12,5 @@ foreach ($item in $CONFIG.enable) {
     $options | %{ $command += " -$_" }
     $command += " | out-null"
     $scripblock = [scriptblock]::Create($command)
-
     icm $scripblock
 }

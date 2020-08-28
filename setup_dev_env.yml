@@ -210,4 +210,8 @@ tools_config:
           extensions:
           - mhutchie.git-graph
           - ms-vscode.atom-keybindings
-          - ms-vscode.powershell
+          - ms-vscode.powershell          
+          - eamodio.gitlens
+          - ms-azuretools.vscode-docker
+          - ms-dotnettools.csharp
+          - ms-python.python
