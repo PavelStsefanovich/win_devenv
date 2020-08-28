@@ -37,7 +37,7 @@ function Get-RegistryValueDataType ([string]$key, [string]$item) {
     $itemType = ([string](gi $key -ErrorAction Stop).getvaluekind($item)).toUpper()
     if ($itemType -notin 'STRING', 'EXPANDSTRING', 'BINARY', 'DWORD', 'MULTISTRING', 'QWORD') {
         return $null
-    }    
+    }
     return $itemType
 }
 function Set-RegistryValueData {
@@ -78,7 +78,7 @@ function Set-RegistryValueData {
     if (!$itemType) {
         $itemType = 'STRING'
     }
-    
+
     #- create missing directories in $key
     $path = $key
     $paths = @()
@@ -115,7 +115,7 @@ foreach ($section in $CONFIG.GetEnumerator()) {
                     $new_value = $current_value
                 }
                 catch {}
-                
+
                 if (!$new_value) {
                     $new_value = @()
                     0..500 | % { $new_value += 0 }
@@ -130,7 +130,7 @@ foreach ($section in $CONFIG.GetEnumerator()) {
             else {
                 $new_value = $item.reg_property_value
             }
-            
+
             Set-RegistryValue -key $item.reg_key `
                             -item $reg_property `
                             -itemType $item.reg_property_type `
