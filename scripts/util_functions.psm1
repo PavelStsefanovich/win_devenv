@@ -96,7 +96,7 @@ function system_restart_pending {
 
 function request_consent ([string]$question) {
     do {
-        Write-Host "`n (?) $question" -ForegroundColor Yellow
+        Write-Host "`n (?) $question`n" -ForegroundColor Yellow
         $reply = [string]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown").Character
         if ($reply.tolower() -notin 'y', 'n') {
             Write-Host "It's a yes/no question."

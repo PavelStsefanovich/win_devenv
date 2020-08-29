@@ -9,7 +9,10 @@
             "type": "PowerShell",
             "request": "launch",
             "script": "${file}",
-            "cwd": "${file}"
+            "cwd": "${file}",
+            "args": [
+                "-exit_and_save_progress_on_error"
+            ]
         }
     ]
 }
