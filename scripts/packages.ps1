@@ -6,10 +6,21 @@ param (
 $ErrorActionPreference = 'stop'
 
 Write-Log "Installing Chocolatey Package manager"
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+$LASTEXITCODE = 0
+$scriptblock = {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+}
 
+$output = icm $scriptblock
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Log -Level WARNING -Message $output
+    throw "FAILED to install Chocolatey"
+}
+
+# install packages
 foreach ($package_type in $CONFIG.GetEnumerator()) {
     if ($package_type.Key -eq 'rootdir') {
         continue
@@ -28,7 +39,7 @@ foreach ($package_type in $CONFIG.GetEnumerator()) {
                 $command += " $($item.args)"
             }
 
-            $scripblock = [scriptblock]::Create($command)
+            $scriptblock = [scriptblock]::Create($command)
 
             $LASTEXITCODE = 0
             $success_exit_codes = $item.success_exit_codes
@@ -37,7 +48,7 @@ foreach ($package_type in $CONFIG.GetEnumerator()) {
                 $success_exit_codes = 0
             }
 
-            $output = icm $scripblock
+            $output = icm $scriptblock
 
             if ($item.interactive) {
                 Write-Log -Level WARNING -Message "Starting interactive installer; when done, press any key to continue"
@@ -45,14 +56,15 @@ foreach ($package_type in $CONFIG.GetEnumerator()) {
             }
             else {
                 if ($LASTEXITCODE -notin ([string]$success_exit_codes).split(',')) {
-                    throw $output
+                    Write-Log -Level WARNING -Message $output
+                    throw "Command FAILED: '$command' (exit code: $LASTEXITCODE)"
                 }
             }
 
             continue
         }
 
-        # chocolatey package manager
+        # chocolatey packages
         if ($package_type.Key -eq 'chocolatey') {
 
             $command = "& choco install `"$($item.name)`""
@@ -62,21 +74,22 @@ foreach ($package_type in $CONFIG.GetEnumerator()) {
             }
 
             $command += " -y --force"
-            $scripblock = [scriptblock]::Create($command)
+            $scriptblock = [scriptblock]::Create($command)
 
             $LASTEXITCODE = 0
             $success_exit_codes = @(0, 1641, 3010)
 
-            icm $scripblock
+            $output = icm $scriptblock
 
             if ($LASTEXITCODE -notin $success_exit_codes) {
-                throw "Command FAILED: '$command'"
+                Write-Log -Level WARNING -Message $output
+                throw "Command FAILED: '$command' (exit code: $LASTEXITCODE)"
             }
 
             continue
         }
 
-        # powershell-get package manager
+        # powershell-get modules
         if ($package_type.Key -eq 'powershellget') {
             if (!(Get-Module $item.name)) {
                 if (!(Get-Module $item.name -ListAvailable)) {
@@ -84,6 +97,8 @@ foreach ($package_type in $CONFIG.GetEnumerator()) {
                 }
                 Import-Module $item.name -DisableNameChecking
             }
+
+            continue
         }
     }
 }
