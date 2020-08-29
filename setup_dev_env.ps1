@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param (
     [string]$config_file_path,
-    [switch]$from_beginning
+    [switch]$from_beginning,
+    [switch]$do_not_continue_on_error
 )
 
 
@@ -20,6 +21,7 @@ function Quit ($exit_code = 0, $exception) {
     Remove-Module Logging -Force
     Write-Host "Log path: '$log_file_path'" -ForegroundColor DarkGray
     if ($exit_code -ne 0) { notepad $log_file_path }
+    Wait-Logging
     exit $exit_code
 }
 
@@ -60,13 +62,13 @@ function stage_manager {
         [Parameter(ParameterSetName = "config")]
         $main_config,
 
-        [Parameter(Mandatory = $true, ParameterSetName = "restart")]
-        [switch]$restart,
-
-        [Parameter(Mandatory = $true, ParameterSetName = "restart")]
+        [Parameter(Mandatory = $true, ParameterSetName = "current_stage")]
         [string]$current_stage,
 
-        [Parameter(ParameterSetName = "restart")]
+        [Parameter(ParameterSetName = "current_stage")]
+        [switch]$restart,
+
+        [Parameter(ParameterSetName = "current_stage")]
         [hashtable]$bound_parameters,
 
         [Parameter(ParameterSetName = "cleanup")]
@@ -113,14 +115,20 @@ function stage_manager {
         }
     }
 
-    ## ParameterSetName == "restart"
-    if ($restart) {
-        $scheduled_task_name = $stage_config.continue_after_restart_taskname
-        $scheduled_task_name = continue_after_restart -scriptpath $PSCommandPath -arguments $bound_parameters -task_name $scheduled_task_name
+    ## ParameterSetName == "current_stage"
+    if ($current_stage) {
+        if ($restart) {
+            $scheduled_task_name = $stage_config.continue_after_restart_taskname
+            $scheduled_task_name = continue_after_restart -scriptpath $PSCommandPath -arguments $bound_parameters -task_name $scheduled_task_name
+            $stage_config.continue_after_restart_taskname = $scheduled_task_name
+        }
+
         $stage_config.current_stage = $current_stage
-        $stage_config.continue_after_restart_taskname = $scheduled_task_name
         $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
-        Restart-Computer -Force
+
+        if ($restart) {
+            Restart-Computer -Force
+        }
     }
 
     ## ParameterSetName == "cleanup"
@@ -134,7 +142,24 @@ function stage_manager {
 
     ## ParameterSetName == "update_report"
     if ($update_report) {
-        $stage_config.stage_report = ($stage_config.stage_report, $update_report -join (';')).TrimStart(';')
+        if ($stage_config.stage_report) {
+            $new_report = @()
+            $stage_config.stage_report.split(';') | %{
+                if ($update_report.split(':')[0] -eq $_.split(':')[0]) {
+                    $new_report += $update_report
+                    $stage_found = $true
+                }
+                else {
+                    $new_report += $_
+                }
+            }
+            $stage_config.stage_report = $new_report -join(';')
+        }
+
+        if (!$stage_found) {
+            $stage_config.stage_report = ($stage_config.stage_report, $update_report -join (';')).TrimStart(';')
+        }
+        
         $stage_config.keys | % { "$_=$($stage_config.$_)" } | escapepath | Out-File $stage_control_filepath -Force ascii | Out-Null
         return $null
     }
@@ -277,6 +302,12 @@ foreach ($stage in $stages) {
     catch {
         Write-Log -Level ERROR -Message $_
         stage_manager -update_report "$stage`:failed"
+        if ($do_not_continue_on_error) {
+            Write-Log "Saving progress and exiting"
+            stage_manager -current_stage $stages[$stages.indexof($stage) - 1]
+            Wait-Logging
+            exit 2
+        }
     }
 
     if ($MAIN_CONFIG.$stage.restart_required) {

@@ -6,19 +6,19 @@ param (
 $ErrorActionPreference = 'stop'
 
 Write-Log "Installing Chocolatey Package manager"
-$LASTEXITCODE = 0
-$scriptblock = {
+# $LASTEXITCODE = 0
+# $scriptblock = {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-}
+# }
 
-$output = icm $scriptblock
+# $output = icm $scriptblock
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Log -Level WARNING -Message $output
-    throw "FAILED to install Chocolatey"
-}
+# if ($LASTEXITCODE -ne 0) {
+#     Write-Log -Level WARNING -Message $output
+#     throw "FAILED to install Chocolatey"
+# }
 
 # install packages
 foreach ($package_type in $CONFIG.GetEnumerator()) {
