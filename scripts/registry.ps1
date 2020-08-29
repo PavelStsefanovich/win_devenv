@@ -101,6 +101,7 @@ foreach ($section in $CONFIG.GetEnumerator()) {
     }
 
     foreach ($item in $section.value) {
+        Wait-Logging
         Write-Log "- $($item.description) ($($section.Key))"
 
         $reg_properties_to_update = [array](Get-RegistryValue $item.reg_key $item.reg_property)
