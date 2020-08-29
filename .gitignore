@@ -9,3 +9,4 @@ push*
 notes.txt
 */junk/*
 *.stage
+.vscode/*
