@@ -82,15 +82,22 @@ Set-Alias -Name npp -Value "C:\Program Files\Notepad++\notepad++.exe"
 # Commands >>
 $host.PrivateData.ErrorBackgroundColor = $host.UI.RawUI.BackgroundColor
 $PSDefaultParameterValues['*:Encoding'] = 'utf8'
-$default_locations = @('C:\Windows\system32', $HOME)
+$default_locations = @('C:\Windows\system32', $HOME, 'C:\Program Files\PowerShell\7')
 
 if ($pwd.Path -in $default_locations) {
     try {
         cd E:\WORKSHOP -ErrorAction Stop
     }
     catch {
-        Write-Warning 'Directory not found: "E:\GoogleDrive\stse.pavell\UsefullScripts"'
+        Write-Warning 'Directory not found: "E:\WORKSHOP"'
     }
+}
+
+try {
+	New-PSDrive us -PSProvider FileSystem -Root E:\GoogleDrive\stse.pavell\UsefullScripts\ | Out-Null
+}
+catch {
+	Write-Warning 'Directory not found: "E:\GoogleDrive\stse.pavell\UsefullScripts"'
 }
 
 write-host "`nAliases:`n"
