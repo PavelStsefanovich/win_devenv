@@ -151,3 +151,7 @@ function continue_after_restart {
         throw $_
     }
 }
+
+function wait_anykey {
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+}

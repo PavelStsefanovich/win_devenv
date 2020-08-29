@@ -178,31 +178,31 @@ utils:
 packages:
   restart_required: true
   script: .\scripts\packages.ps1
-  config:
-    local:
-    - name: DisplayLink Graphics Driver
-      installer: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
-      # args: '/norestart'
-      interactive: true
-    - name: Samsung Dual Curve Monitors Driver
-      installer: .\bin\C27F591.exe
-      interactive: true
-    package_manager:
-    - name: Chocolatey
-      script: .\scripts\choco.ps1
-      config:
-      - name: notepadplusplus
-      - name: vscode
-      - name: beyondcompare
-      - name: "git.install"
-      - name: git
-        args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
-      # - name: openssh
-      #   args: /SSHAgentFeature
-    - name: PowerShellGet
-      script: .\scripts\psget.ps1
-      config:
-      - name: LocationStack
+  config: null
+    # local:
+    # - name: DisplayLink Graphics Driver
+    #   exe: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
+    #   # args: '/norestart'
+    #   interactive: true
+    # - name: Samsung Dual Curve Monitors Driver
+    #   exe: .\bin\C27F591.exe
+    #   interactive: true
+    # chocolatey:
+    # - name: notepadplusplus
+    # - name: vscode
+    # - name: beyondcompare
+    # - name: git.install
+    # - name: git
+    #   args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
+    # - name: openssh
+    #   args: /SSHAgentFeature
+    # powershellget:
+    # - name: Logging
+    #   scope: CurrentUser
+    # - name: powershell-yaml
+    #   scope: CurrentUser
+    # - name: LocationStack
+    #   scope: CurrentUser
 
 
 tools_config:
