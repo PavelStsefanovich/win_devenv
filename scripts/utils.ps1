@@ -15,7 +15,7 @@ foreach ($item in $CONFIG.sys_utils) {
         $command += " $($item.args)"
     }
     
-    $scripblock = [scriptblock]::Create($command)
+    $scriptblock = [scriptblock]::Create($command)
 
     $LASTEXITCODE = 0
     $success_exit_codes = $item.success_exit_codes
@@ -24,9 +24,10 @@ foreach ($item in $CONFIG.sys_utils) {
         $success_exit_codes = 0
     }
     
-    $output = icm $scripblock
+    $output = icm $scriptblock
 
     if ($LASTEXITCODE -notin ([string]$success_exit_codes).split(',')) {
-        throw $output
+        Write-Log -Level WARNING -Message $output
+        throw "Command FAILED: '$command' (exit code: $LASTEXITCODE)"
     }
 }
