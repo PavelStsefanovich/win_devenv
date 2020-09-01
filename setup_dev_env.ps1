@@ -312,7 +312,7 @@ foreach ($stage in $stages) {
 
     if ($MAIN_CONFIG.$stage.restart_required) {
         if (system_restart_pending) {
-            if (request_consent "System restart is pending. Do you want to restart now?") {
+            if (request_consent "System restart is pending. Do you want to restart now? (script will continue after restart)") {
                 Write-Log "Restarting computer"
                 stage_manager -restart -current_stage $stage -bound_parameters:$PSBoundParameters
             }
