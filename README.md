@@ -3,7 +3,7 @@
 DevEnv is a suite of scripts (Powershell) that automate configuration of various aspects of development environment on Windows.
 
 ---
-#### Currently included:
+### Currently included:
 - **setup_dev_env.ps1** (main script)
 - **util_functions.psm1** (support procedures)
 - **packages.ps1** (handles installation from various sources)
@@ -15,7 +15,7 @@ DevEnv is a suite of scripts (Powershell) that automate configuration of various
 - **winfeatures** (enables windows optional features)
 
 ---
-#### Configuration file
+### Configuration file
 **setup_dev_env.yml** (main configuration file)
 
 Main config file holds configuration for all the scripts in the suite in YAML format.
@@ -38,7 +38,7 @@ Stages configurations follow uniform format:
 To add new stage, append stage config to the main configuration file and place corresponding script into the /scripts directory. If needed, place additional files or binaries into /files or /binaries directories respectively and update stage config with relative paths.
 
 ---
-#### Logging
+### Logging
 Log file is created on initial execution of the main script and maintained throughout all stages, even after system restart, until the last stage has finished executing.
 Log file is placed into the ./logs directory inside current directory (may be different from the main script location)
 
