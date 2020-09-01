@@ -1,5 +1,6 @@
 *logs/*
-bin/*
+*/*.exe
+*/*.msi
 t1.yml
 example*.yml
 test*

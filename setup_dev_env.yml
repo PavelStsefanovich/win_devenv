@@ -14,195 +14,192 @@ win_optional_features:
 powershell:
   restart_required: false
   script: .\scripts\powershell.ps1
-  config: null
-    #(ps)(debug)
-    # profiles:
-    # - name: pwsh
-    #   source: .\files\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
-    #   destingation: $HOME\Documents\PowerShell
-    # - name: powershell
-    #   source: .\files\ps_profiiles\powershell\Microsoft.PowerShell_profile.ps1
-    #   destingation: $HOME\Documents\WindowsPowerShell
+  config:
+    profiles:
+    - name: pwsh
+      source: .\files\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
+      destingation: $HOME\Documents\PowerShell
+    - name: powershell
+      source: .\files\ps_profiiles\powershell\Microsoft.PowerShell_profile.ps1
+      destingation: $HOME\Documents\WindowsPowerShell
 
 
 registry_tweaks:
   restart_required: false
   script: .\scripts\registry.ps1
-  config: null
-    #(ps)(debug)
-    # ui_customizations:
-    # - name: taskbar_buttons
-    #   description: "Setting taskbar buttons: 'Show on all screens'"
-    #   reg_key: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced
-    #   reg_property: MMTaskbarMode
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: cortana_icon
-    #   description: "Removing Cortana icon"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Search
-    #   reg_property: SearchboxTaskbarMode
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: people_icon
-    #   description: "Removing People icon"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
-    #   reg_property: PeopleBand
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: task_view_icon
-    #   description: "Removing task view icon"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
-    #   reg_property: ShowTaskViewButton
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: show_file_extensions
-    #   description: "Setting file extensions: 'Show'"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
-    #   reg_property: HideFileExt
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: color_prevalence
-    #   description: "Setting color prevalence: StartMenu, Taskbar and Action Center"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
-    #   reg_property: ColorPrevalence
-    #   reg_property_type: DWORD
-    #   reg_property_value: 1
-    # - name: caption_height
-    #   description: "Setting window title bar height: -285"
-    #   reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
-    #   reg_property: CaptionHeight
-    #   reg_property_type: STRING
-    #   reg_property_value: '-285'
-    # - name: caption_width
-    #   description: "Setting window title bar width: -285"
-    #   reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
-    #   reg_property: CaptionWidth
-    #   reg_property_type: STRING
-    #   reg_property_value: '-285'
-    # - name: scroll_height
-    #   description: "Setting scroll bar height: -150"
-    #   reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
-    #   reg_property: ScrollHeight
-    #   reg_property_type: STRING
-    #   reg_property_value: '-150'
-    # - name: scroll_width
-    #   description: "Setting scroll bar width: -150"
-    #   reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
-    #   reg_property: ScrollWidth
-    #   reg_property_type: STRING
-    #   reg_property_value: '-150'
-    # - name: border_width
-    #   description: "Setting window border width: 0"
-    #   reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
-    #   reg_property: PaddedBorderWidth
-    #   reg_property_type: STRING
-    #   reg_property_value: '0'
-    # - name: taskbar_position_single_monitor
-    #   description: "Setting taskbar position (single monitor): 'Left'"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3
-    #   reg_property: '*'
-    #   reg_property_type: BINARY
-    #   reg_property_value: '[12]:0'
-    # - name: taskbar_position_multi_monitor
-    #   description: "Setting taskbar position (multi-monitor): 'Left'"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MMStuckRects3
-    #   reg_property: '*'
-    #   reg_property_type: BINARY
-    #   reg_property_value: '[12]:0'
+  config:
+    ui_customizations:
+    - name: taskbar_buttons
+      description: "Setting taskbar buttons: 'Show on all screens'"
+      reg_key: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      reg_property: MMTaskbarMode
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: cortana_icon
+      description: "Removing Cortana icon"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Search
+      reg_property: SearchboxTaskbarMode
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: people_icon
+      description: "Removing People icon"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
+      reg_property: PeopleBand
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: task_view_icon
+      description: "Removing task view icon"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      reg_property: ShowTaskViewButton
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: show_file_extensions
+      description: "Setting file extensions: 'Show'"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      reg_property: HideFileExt
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: color_prevalence
+      description: "Setting color prevalence: StartMenu, Taskbar and Action Center"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+      reg_property: ColorPrevalence
+      reg_property_type: DWORD
+      reg_property_value: 1
+    - name: caption_height
+      description: "Setting window title bar height: -285"
+      reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
+      reg_property: CaptionHeight
+      reg_property_type: STRING
+      reg_property_value: '-285'
+    - name: caption_width
+      description: "Setting window title bar width: -285"
+      reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
+      reg_property: CaptionWidth
+      reg_property_type: STRING
+      reg_property_value: '-285'
+    - name: scroll_height
+      description: "Setting scroll bar height: -150"
+      reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
+      reg_property: ScrollHeight
+      reg_property_type: STRING
+      reg_property_value: '-150'
+    - name: scroll_width
+      description: "Setting scroll bar width: -150"
+      reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
+      reg_property: ScrollWidth
+      reg_property_type: STRING
+      reg_property_value: '-150'
+    - name: border_width
+      description: "Setting window border width: 0"
+      reg_key: HKCU:\Control Panel\Desktop\WindowMetrics
+      reg_property: PaddedBorderWidth
+      reg_property_type: STRING
+      reg_property_value: '0'
+    - name: taskbar_position_single_monitor
+      description: "Setting taskbar position (single monitor): 'Left'"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3
+      reg_property: '*'
+      reg_property_type: BINARY
+      reg_property_value: '[12]:0'
+    - name: taskbar_position_multi_monitor
+      description: "Setting taskbar position (multi-monitor): 'Left'"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\MMStuckRects3
+      reg_property: '*'
+      reg_property_type: BINARY
+      reg_property_value: '[12]:0'
 
-    # privacy:
-    # - name: advertising_id
-    #   description: "Disabling advertising id"
-    #   reg_key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo
-    #   reg_property: Enabled
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: language_list
-    #   description: "Disabling websites access to language list"
-    #   reg_key: HKCU:\Control Panel\International\User Profile
-    #   reg_property: HttpAcceptLanguageOptOut
-    #   reg_property_type: DWORD
-    #   reg_property_value: 1
-    # - name: feedback_notifications
-    #   description: "Disabling Windows feedback notifications"
-    #   reg_key: HKLM:\Software\Policies\Microsoft\Windows\DataCollection
-    #   reg_property: DoNotShowFeedbackNotifications
-    #   reg_property_type: DWORD
-    #   reg_property_value: 1
+    privacy:
+    - name: advertising_id
+      description: "Disabling advertising id"
+      reg_key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo
+      reg_property: Enabled
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: language_list
+      description: "Disabling websites access to language list"
+      reg_key: HKCU:\Control Panel\International\User Profile
+      reg_property: HttpAcceptLanguageOptOut
+      reg_property_type: DWORD
+      reg_property_value: 1
+    - name: feedback_notifications
+      description: "Disabling Windows feedback notifications"
+      reg_key: HKLM:\Software\Policies\Microsoft\Windows\DataCollection
+      reg_property: DoNotShowFeedbackNotifications
+      reg_property_type: DWORD
+      reg_property_value: 1
 
-    # file_explorer:
-    # - name: explorer_default_location
-    #   description: "Setting explorer default location: 'This PC'"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
-    #   reg_property: LaunchTo
-    #   reg_property_type: DWORD
-    #   reg_property_value: 1
-    # - name: explorer_recent_files
-    #   description: "Setting explorer recent files: 'Hide'"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
-    #   reg_property: ShowRecent
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
-    # - name: explorer_frequent_folders
-    #   description: "Setting explorer frequent folders: 'Hide'"
-    #   reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
-    #   reg_property: ShowFrequent
-    #   reg_property_type: DWORD
-    #   reg_property_value: 0
+    file_explorer:
+    - name: explorer_default_location
+      description: "Setting explorer default location: 'This PC'"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      reg_property: LaunchTo
+      reg_property_type: DWORD
+      reg_property_value: 1
+    - name: explorer_recent_files
+      description: "Setting explorer recent files: 'Hide'"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
+      reg_property: ShowRecent
+      reg_property_type: DWORD
+      reg_property_value: 0
+    - name: explorer_frequent_folders
+      description: "Setting explorer frequent folders: 'Hide'"
+      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
+      reg_property: ShowFrequent
+      reg_property_type: DWORD
+      reg_property_value: 0
 
 
 utils:
   restart_required: true
   script: .\scripts\utils.ps1
-  config: null
-    #(ps)(debug)
-    # sys_utils:
-    # - exe: powercfg
-    #   args: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
-    #   description: "Setting close lid action when on AC power: 'do nothing'"
-    #   success_exit_codes: 0
-    # - exe: dism
-    #   args: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-    #   description: "Installing Windows feature: 'Microsoft-Windows-Subsystem-Linux'"
-    #   success_exit_codes: 0,3010
-    # - exe: dism
-    #   args: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-    #   description: "Installing Windows feature: 'VirtualMachinePlatform'"
-    #   success_exit_codes: 0,3010
-    # - exe: wsl
-    #   args: --set-default-version 2
-    #   description: "Setting default WSL version: '2'"
-    #   success_exit_codes: 0
+  config:
+    sys_utils:
+    - exe: powercfg
+      args: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
+      description: "Setting close lid action when on AC power: 'do nothing'"
+      success_exit_codes: 0
+    - exe: dism
+      args: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+      description: "Installing Windows feature: 'Microsoft-Windows-Subsystem-Linux'"
+      success_exit_codes: 0,3010
+    - exe: dism
+      args: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+      description: "Installing Windows feature: 'VirtualMachinePlatform'"
+      success_exit_codes: 0,3010
+    - exe: wsl
+      args: --set-default-version 2
+      description: "Setting default WSL version: '2'"
+      success_exit_codes: 0
 
 
 packages:
   restart_required: true
   script: .\scripts\packages.ps1
-  config: null
-    # local:
-    # - name: DisplayLink Graphics Driver
-    #   exe: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
-    #   # args: '/norestart'
-    #   interactive: true
-    # - name: Samsung Dual Curve Monitors Driver
-    #   exe: .\bin\C27F591.exe
-    #   interactive: true
-    # chocolatey:
-    # - name: notepadplusplus
-    # - name: vscode
-    # - name: beyondcompare
-    # - name: git.install
-    # - name: git
-    #   args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
-    # - name: openssh
-    #   args: /SSHAgentFeature
-    # powershellget:
-    # - name: Logging
-    #   scope: CurrentUser
-    # - name: powershell-yaml
-    #   scope: CurrentUser
-    # - name: LocationStack
-    #   scope: CurrentUser
+  config:
+    local:
+    - name: DisplayLink Graphics Driver
+      exe: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
+      # args: '/norestart'
+      interactive: true
+    - name: Samsung Dual Curve Monitors Driver
+      exe: .\bin\C27F591.exe
+      interactive: true
+    chocolatey:
+    - name: notepadplusplus
+    - name: vscode
+    - name: beyondcompare
+    - name: git.install
+    - name: git
+      args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
+    - name: openssh
+      args: /SSHAgentFeature
+    powershellget:
+    - name: Logging
+      scope: CurrentUser
+    - name: powershell-yaml
+      scope: CurrentUser
+    - name: LocationStack
+      scope: CurrentUser
 
 
 tools_config:
@@ -210,14 +207,14 @@ tools_config:
   script: .\scripts\tools.ps1
   config:
     dev_tools:
-    - vscode:
-        script: .\scripts\vscode.ps1
-        config:
-          extensions:
-          - mhutchie.git-graph
-          - ms-vscode.atom-keybindings
-          - ms-vscode.powershell          
-          - eamodio.gitlens
-          - ms-azuretools.vscode-docker
-          - ms-dotnettools.csharp
-          - ms-python.python
+    - name: vscode
+      script: .\scripts\vscode.ps1
+      config:
+        extensions:
+        - mhutchie.git-graph
+        - ms-vscode.atom-keybindings
+        - ms-vscode.powershell          
+        - eamodio.gitlens
+        - ms-azuretools.vscode-docker
+        - ms-dotnettools.csharp
+        - ms-python.python
