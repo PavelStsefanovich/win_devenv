@@ -35,7 +35,7 @@ Stages configurations follow uniform format:
         config:  custom stage configuration that can be consumed by the stage script
     ?>
 
-To add new stage, append stage config to the main configuration file and place corresponding script into the /scripts directory. If needed, place additional files or binaries into /files or /binaries directories respectively and update stage config with relative paths.
+To add a new stage, append stage config to the main configuration file and place corresponding script into the /scripts directory. If needed, place additional files or binaries into /files or /binaries directories respectively and update stage config with relative paths.
 
 ---
 ### Logging
