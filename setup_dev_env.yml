@@ -193,6 +193,7 @@ packages:
       args: /GitAndUnixToolsOnPath /WindowsTerminal /NoGuiHereIntegration
     - name: openssh
       args: /SSHAgentFeature
+    - name: 7zip.install
     powershellget:
     - name: Logging
       scope: CurrentUser
