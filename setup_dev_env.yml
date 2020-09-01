@@ -157,19 +157,19 @@ utils:
     - exe: powercfg
       args: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
       description: "Setting close lid action when on AC power: 'do nothing'"
-      success_exit_codes: 0
+      success_exit_codes: "0"
     - exe: dism
       args: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
       description: "Installing Windows feature: 'Microsoft-Windows-Subsystem-Linux'"
-      success_exit_codes: 0,3010
+      success_exit_codes: "0,3010"
     - exe: dism
       args: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
       description: "Installing Windows feature: 'VirtualMachinePlatform'"
-      success_exit_codes: 0,3010
+      success_exit_codes: "0,3010"
     - exe: wsl
       args: --set-default-version 2
       description: "Setting default WSL version: '2'"
-      success_exit_codes: 0
+      success_exit_codes: "0"
 
 
 packages:

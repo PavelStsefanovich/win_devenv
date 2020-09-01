@@ -141,7 +141,8 @@ function continue_after_restart {
         $user = $env:USERDOMAIN, $env:USERNAME -join ('\')
         $trigger = New-ScheduledTaskTrigger -AtLogOn -User $user
         $principal = New-ScheduledTaskPrincipal -UserId $user -RunLevel Highest -LogonType Interactive
-        $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+        $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings
         Register-ScheduledTask $task_name -InputObject $task | out-null
 
         return $task_name
