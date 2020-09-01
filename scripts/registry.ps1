@@ -132,10 +132,10 @@ foreach ($section in $CONFIG.GetEnumerator()) {
                 $new_value = $item.reg_property_value
             }
 
-            Set-RegistryValue -key $item.reg_key `
-                            -item $reg_property `
-                            -itemType $item.reg_property_type `
-                            -value $new_value
+            Set-RegistryValueData -key $item.reg_key `
+                              -item $reg_property `
+                              -itemType $item.reg_property_type `
+                              -value $new_value
         }
     }
 }
