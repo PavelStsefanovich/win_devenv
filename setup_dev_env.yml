@@ -148,6 +148,14 @@ registry_tweaks:
       reg_property_type: DWORD
       reg_property_value: 0
 
+    system:
+    - name: path character limit
+      description: "Removing 260 characters path limit"
+      reg_key: HKCU:\SYSTEM\CurrentControlSet\Control\FileSystem
+      reg_property: LongPathsEnabled
+      reg_property_type: DWORD
+      reg_property_value: 1
+
 
 utils:
   restart_required: true
