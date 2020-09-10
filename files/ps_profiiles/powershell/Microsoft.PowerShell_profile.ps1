@@ -53,17 +53,6 @@ function Test-RestartRequired {
 function Wait-AnyKey {
     $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }
-function xsh ([switch]$force) {
-    if ($force) {
-        $content = cat E:\misc\fn\fn.txt
-        $line = ""
-        while ($line.Length -lt 1) {
-            $ln_num = Get-Random $content.Length
-            [string]$line = $content[$ln_num].trim()
-        }
-        & "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -incognito $line
-    }
-}
 # Functions <<
 
 # Modules >>
