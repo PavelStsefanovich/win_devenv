@@ -178,6 +178,12 @@ utils:
       args: --set-default-version 2
       description: "Setting default WSL version: '2'"
       success_exit_codes: "0"
+    scripts:
+    - exe: powershell.exe
+      args: -NoLogo -NoProfile -Command 'Install-Module -Name PackageManagement -Force -MinimumVersion 1.4.6 -Scope CurrentUser -AllowClobber'
+      description: Applying fix for issue 'You have an older version of PackageManagement known to cause issues with PowerShell extension'
+      success_exit_codes: "0"      
+
 
 
 packages:
