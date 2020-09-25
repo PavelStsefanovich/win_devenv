@@ -208,6 +208,7 @@ packages:
     - name: openssh
       args: /SSHAgentFeature
     - name: 7zip.install
+    - name: mobaxterm
     powershellget:
     - name: Logging
       scope: CurrentUser
