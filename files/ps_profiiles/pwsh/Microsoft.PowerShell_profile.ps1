@@ -7,7 +7,7 @@ if (Test-Path($ChocolateyProfile)) {
 
 # ENVIRONMENT VARIABLES
 # $env:PSModulePath = $env:PSModulePath.TrimEnd(';') + ';<additional_module_path>'
-# $env:Path = $env:Path.trim(';') + ';<some_path>'
+$env:path = $env:path.trim(';') + ';D:\GoogleDrive\stse.pavell\UsefullScripts'
 
 
 
@@ -21,7 +21,7 @@ function prompt {
 
 
 # MODULES
-$modules_to_install = @('UtilityFunctions')
+$modules_to_install = @('UtilityFunctions', 'WinRegistry')
 $modules_to_install | % { Import-Module $_ -Force -DisableNameChecking }
 
 
@@ -33,7 +33,7 @@ $default_locations = @(
     'C:\Windows\System32\WindowsPowerShell\v1.0',
     'C:\Program Files\PowerShell\7',
     $HOME)
-$working_directory = 'E:\WORKSHOP'
+$working_directory = 'D:\WORKSHOP'
 
 
 # TITLE
