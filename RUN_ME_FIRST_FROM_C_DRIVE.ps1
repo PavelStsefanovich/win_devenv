@@ -76,3 +76,7 @@ foreach ( $label in $drives_map.Keys ) {
         $Drive | Set-CimInstance -Property @{ DriveLetter = $drives_map.$label }
     }
 }
+
+cp D:\GoogleDrive\stse.pavell\Dev\DevEnv . -Recurse -Force
+cd DevEnv
+& setup_dev_env.ps1
