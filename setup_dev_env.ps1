@@ -258,7 +258,7 @@ $exit_code = 0
 $timestamp = get-date -f 'yyyy-MM-ddTHH-mm-ss'
 $script:main_script_basename = (gi $PSCommandPath).BaseName
 Import-Module $PSScriptRoot\scripts\util_functions.psm1 -Force -DisableNameChecking
-restart_elevated -script_args $PSBoundParameters
+restart_elevated -arguments $PSBoundParameters
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 
 
