@@ -210,7 +210,9 @@ packages:
       scope: CurrentUser
     - name: powershell-yaml
       scope: CurrentUser
-    - name: LocationStack
+    - name: UtilityFunctions
+      scope: CurrentUser
+    - name: WinRegistry
       scope: CurrentUser
 
 
