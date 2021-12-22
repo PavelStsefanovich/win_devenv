@@ -86,7 +86,7 @@ foreach ($package_type in $CONFIG.GetEnumerator()) {
                 if (!(Get-Module $item.name -ListAvailable)) {
                     Install-Module $item.name -Force -Scope $item.scope
                 }
-                Import-Module $item.name -DisableNameChecking
+                Import-Module $item.name -Force -DisableNameChecking
             }
 
             continue
