@@ -6,7 +6,7 @@ win_optional_features:
   restart_required: true
   script: .\scripts\winfeatures.ps1
   config: null
-    # enable:                   
+    # enable:
     # - name: VirtualMachinePlatform        # this particular feature is enabled in "utils" section below
     #   options: all,online
 
@@ -178,7 +178,7 @@ utils:
     - exe: powershell.exe
       args: -NoLogo -NoProfile -Command 'Install-Module -Name PackageManagement -Force -MinimumVersion 1.4.6 -Scope CurrentUser -AllowClobber'
       description: Applying fix for issue 'You have an older version of PackageManagement known to cause issues with PowerShell extension'
-      success_exit_codes: "0"      
+      success_exit_codes: "0"
 
 
 
@@ -205,6 +205,7 @@ packages:
       args: /SSHAgentFeature
     - name: 7zip.install
     - name: mobaxterm
+    - name: googlechrome
     powershellget:
     - name: Logging
       scope: CurrentUser
@@ -231,10 +232,13 @@ tools_config:
         extensions:
         - mhutchie.git-graph
         - ms-vscode.atom-keybindings
-        - ms-vscode.powershell          
+        - ms-vscode.powershell
         - eamodio.gitlens
         - ms-azuretools.vscode-docker
         - ms-dotnettools.csharp
         - ms-python.python
         - ms-vscode-remote.remote-wsl
         - alexcvzz.vscode-sqlite
+        - Gruntfuggly.todo-tree
+        - L13RARY.l13-diff
+        - monokai.theme-monokai-pro-vscode
