@@ -1,3 +1,8 @@
+function isadmin {
+    return ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+        [Security.Principal.WindowsBuiltInRole] "Administrator")
+}
+
 function restart-elevated {
     param(
         $arguments,
@@ -62,6 +67,7 @@ $drives_map = @{
 
 foreach ( $label in $drives_map.Keys ) {
     $Drive = Get-CimInstance -ClassName Win32_Volume -Filter "Label = '$label'"
+    if (!$Drive) { continue }
 
     if ( $Drive.DriveLetter -ne $drives_map.$label ) {
         
@@ -79,4 +85,4 @@ foreach ( $label in $drives_map.Keys ) {
 
 cp D:\GoogleDrive\stse.pavell\Dev\DevEnv . -Recurse -Force
 cd DevEnv
-& setup_dev_env.ps1
+& .\setup_dev_env.ps1
