@@ -1,27 +1,23 @@
-vars:   # 'vars' key must appear first
-  config_file_path: ''
+sequence:
+- win_features
+- copy
+# - registry
+# - utils
+# - packages
+# - tools_config
 
 
-win_optional_features:
-  restart_required: true
-  script: .\scripts\winfeatures.ps1
-  config: null
-    # enable:
-    # - name: VirtualMachinePlatform        # this particular feature is enabled in "utils" section below
-    #   options: all,online
+# win_features:
+#   enable:
+#   - name: VirtualMachinePlatform        # this particular feature is enabled in "utils" section below
+#     options: all,online
 
 
-powershell:
-  restart_required: false
-  script: .\scripts\powershell.ps1
-  config:
-    profiles:
-    - name: pwsh
-      source: .\files\ps_profiiles\pwsh\Microsoft.PowerShell_profile.ps1
-      destingation: $HOME\Documents\PowerShell
-    - name: powershell
-      source: .\files\ps_profiiles\powershell\Microsoft.PowerShell_profile.ps1
-      destingation: $HOME\Documents\WindowsPowerShell
+copy:
+- source: .\files\ps_profiles\pwsh\Microsoft.PowerShell_profile.ps1
+  destination_dir: ~\Documents\PowerShell
+- source: .\files\ps_profiles\powershell\Microsoft.PowerShell_profile.ps1
+  destination_dir: ~\Documents\WindowsPowerShell
 
 
 registry_tweaks:
@@ -89,12 +85,12 @@ registry_tweaks:
       reg_property: SearchboxTaskbarMode
       reg_property_type: DWORD
       reg_property_value: 0
-    - name: people_icon
-      description: "Removing People icon"
-      reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
-      reg_property: PeopleBand
-      reg_property_type: DWORD
-      reg_property_value: 0
+    # - name: people_icon
+      # description: "Removing People icon"
+      # reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
+      # reg_property: PeopleBand
+      # reg_property_type: DWORD
+      # reg_property_value: 0
     - name: task_view_icon
       description: "Removing task view icon"
       reg_key: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
@@ -186,14 +182,6 @@ packages:
   restart_required: true
   script: .\scripts\packages.ps1
   config:
-    local:
-    - name: DisplayLink Graphics Driver
-      exe: .\bin\DisplayLink USB Graphics Software for Windows - Not for Production 8.4 Release Candidate.exe
-      # args: '/norestart'
-      interactive: true
-    - name: Samsung Dual Curve Monitors Driver
-      exe: .\bin\C27F591.exe
-      interactive: true
     chocolatey:
     - name: notepadplusplus
     - name: vscode
@@ -206,6 +194,10 @@ packages:
     - name: 7zip.install
     - name: mobaxterm
     - name: googlechrome
+    local:
+    - name: WSL Core Patch
+      exe: .\bin\wsl_update_x64.msi
+      interactive: true
     powershellget:
     - name: Logging
       scope: CurrentUser
