@@ -7,10 +7,11 @@ sequence:
 # - tools_config
 
 
-# win_features:
-#   enable:
-#   - name: VirtualMachinePlatform        # this particular feature is enabled in "utils" section below
-#     options: all,online
+win_features:
+- name: VirtualMachinePlatform
+  all: true
+- name: Microsoft-Windows-Subsystem-Linux
+  all: true
 
 
 copy:
