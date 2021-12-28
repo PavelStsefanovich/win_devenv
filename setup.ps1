@@ -109,7 +109,7 @@ function ContinueAfterRestart {
 #--------------------------------------------------
 # INIT
 $ErrorActionPreference = 'Stop'
-$STARTTIME = Get-Date
+$STOPWATCH = [diagnostics.stopwatch]::StartNew()
 $host.PrivateData.ErrorBackgroundColor = $host.UI.RawUI.BackgroundColor
 $PSDefaultParameterValues['*:Encoding'] = 'utf8'
 $IS_VERBOSE = [bool]($PSCmdlet.MyInvocation.BoundParameters.Verbose)
@@ -236,10 +236,8 @@ foreach ( $stage in $CONFIG.sequence ) {
 
 #--------------------------------------------------
 # ELAPSED TIME
-$FINISHTIME = Get-Date
-$ElapsedTime = $FINISHTIME - $STARTTIME
 newline
-info "SETUP FINISHED in $($ElapsedTime.Minutes) Minutes $($ElapsedTime.Seconds) Seconds."
+info "SETUP FINISHED in $($STOPWATCH.Elapsed.Minutes) Minutes $($STOPWATCH.Elapsed.Seconds) Seconds."
 
 
 #--------------------------------------------------
