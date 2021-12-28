@@ -1,13 +1,12 @@
-# [cmdletbinding()]
 param (
     [string]$ConfigFilePath = $(throw "Required parameter not provided: -ConfigFilePath"),
+    [string]$MainScriptDir,
     [switch]$UpdateConfigInPlace
 )
 
 
 $ErrorActionPreference = 'stop'
 $excode = 1
-# $IS_VERBOSE = [bool]($PSCmdlet.MyInvocation.BoundParameters.Verbose)
 $stage = (gi $PSCommandPath).BaseName
 $ConfigFilePath = $ConfigFilePath | abspath -verify
 
@@ -23,6 +22,7 @@ $index = 0
 while ( $config.$stage[$index] ) {
     $item = $config.$stage[$index]
     info " enabling feature `"$($item.name)`"" -sub
+
     $command = "Enable-WindowsOptionalFeature -FeatureName $($item.name) -online -norestart"
     if ( $item.all ) { $command += " -all" }
     $command += " | Out-Null"
