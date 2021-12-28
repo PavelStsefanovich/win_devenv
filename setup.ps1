@@ -192,7 +192,10 @@ else {
 foreach ( $stage in $CONFIG.sequence ) {
 
     # if -StartStage specified, then skip until current stage matches
-    if ( $StartStage -and ($stage -ne $StartStage) ) { continue }
+    if ( $StartStage ) {
+        if ( $stage -eq $StartStage ) { $StartStage = $null }
+        else { continue }
+    }
 
     # run only if stage config exists
     if ( $CONFIG.$stage ) {
