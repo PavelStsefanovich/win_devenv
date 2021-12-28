@@ -1,141 +1,56 @@
+[cmdletbinding()]
 param (
-    $CONFIG
+    [string]$ConfigFilePath = $(throw "Required parameter not provided: -ConfigFilePath"),
+    [string]$MainScriptDir = $(throw "Required parameter not provided: -MainScriptDir"),
+    [switch]$UpdateConfigInPlace
 )
 
 
-function Get-RegistryValue {
-    [CmdletBinding()]
-    param (
-        [parameter()]
-        [string]$key = $(throw "Mandatory argument not provided: <key>."),
-
-        [parameter()]
-        [string]$item = '*'
-    )
-
-    $ErrorActionPreference = 'Stop'
-    $regValues = (gi $key).property | ? { $_ -like $item }
-    return $regValues
-}
-function Get-RegistryValueData {
-    [CmdletBinding()]
-    param (
-        [parameter()]
-        [string]$key = $(throw "Mandatory argument not provided: <key>."),
-
-        [parameter()]
-        [string]$item = $(throw "Mandatory argument not provided: <item>.")
-    )
-
-    $ErrorActionPreference = 'Stop'
-    $keyValue = Get-ItemProperty $key | Select-Object -ExpandProperty $item
-    return $keyValue
-}
-function Get-RegistryValueDataType ([string]$key, [string]$item) {
-    $ErrorActionPreference = 'Stop'
-
-    $itemType = ([string](gi $key -ErrorAction Stop).getvaluekind($item)).toUpper()
-    if ($itemType -notin 'STRING', 'EXPANDSTRING', 'BINARY', 'DWORD', 'MULTISTRING', 'QWORD') {
-        return $null
-    }
-    return $itemType
-}
-function Set-RegistryValueData {
-    [CmdletBinding()]
-    param (
-        [parameter()]
-        [string]$key = $(throw "Mandatory argument not provided: <key>."),
-
-        [parameter()]
-        [string]$item = $(throw "Mandatory argument not provided: <item>."),
-
-        [parameter()]
-        [ValidateSet('STRING', 'EXPANDSTRING', 'BINARY', 'DWORD', 'MULTISTRING', 'QWORD', $null)]
-        [string]$itemType = $null,
-
-        [parameter()]
-        $value = $null
-    )
-
-    $ErrorActionPreference = 'Stop'
-
-    if ($key.StartsWith('Computer\')) {
-        $key = $key.Substring(9)
-    }
-
-    if ($key.StartsWith('HKEY_CURRENT_USER\')) {
-        $key = "HKCU:" + $key.Substring(17)
-    }
-
-    if ($key.StartsWith('HKEY_LOCAL_MACHINE\')) {
-        $key = "HKLM:" + $key.Substring(18)
-    }
-
-    if (!$itemType) {
-        $itemType = Get-RegistryValueDataType $key -item $item
-    }
-
-    if (!$itemType) {
-        $itemType = 'STRING'
-    }
-
-    #- create missing directories in $key
-    $path = $key
-    $paths = @()
-    while (!(Test-Path $path)) {
-        $paths += $path
-        $path = $path | Split-Path
-    }
-    $paths[($paths.Length - 1)..0] | % { New-Item $_ | Out-Null }
-
-    #- create registry value with data
-    New-ItemProperty $key -Name $item -PropertyType $itemType -Value $value -Force | Out-Null
-}
-
-
 $ErrorActionPreference = 'stop'
+$excode = 1
+$stage = (gi $PSCommandPath).BaseName
+$ConfigFilePath = $ConfigFilePath | abspath -verify
+$MainScriptDir = $MainScriptDir | abspath -verify
 
-foreach ($section in $CONFIG.GetEnumerator()) {
-    if ($section.Key -eq 'rootdir') {
-        continue
+# dependencies
+if ( !(Get-Module UtilityFunctions) ) { Import-Module -Name powershell-yaml -Force -Scope Local -DisableNameChecking }
+if ( !(Get-Module powershell-yaml) ) { Import-Module -Name powershell-yaml -Force -Scope Local -DisableNameChecking }
+if ( !(Get-Module WinRegistry) ) { Import-Module -Name WinRegistry -Force -Scope Local -DisableNameChecking }
+
+# load config
+$config = cat $ConfigFilePath -Raw | ConvertFrom-Yaml -Ordered
+$index = 0
+
+# copy files
+while ( $config.$stage[$index] ) {
+    $item = $config.$stage[$index]
+    info $item.description -sub
+
+    try {
+        Set-RegKeyPropertyValue `
+            -RegPath $item.key `
+            -Property $item.property `
+            -Value $item.value `
+            -ValueType $item.type `
+            -Force
+
+        # remove from config, if succeded
+        $config.$stage.RemoveAt($index)
     }
-
-    foreach ($item in $section.value) {
-        Wait-Logging
-        Write-Log "- $($item.description) ($($section.Key))"
-
-        $reg_properties_to_update = [array](Get-RegistryValue $item.reg_key $item.reg_property)
-        if (!$reg_properties_to_update) {
-            $reg_properties_to_update = [array]$item.reg_property
-        }
-
-        foreach ($reg_property in $reg_properties_to_update) {
-            if ($item.reg_property_type -eq 'BINARY') {
-                try {
-                    $current_value = Get-RegistryValueData $item.reg_key $reg_property
-                    $new_value = $current_value
-                }
-                catch {}
-
-                if (!$new_value) {
-                    $new_value = @()
-                    0..500 | % { $new_value += 0 }
-                }
-
-                foreach ($binvalue in $item.reg_property_value.split(',')) {
-                    $index = $binvalue.split(':')[0].trim('[]')
-                    $index_value = $binvalue.split(':')[1]
-                    $new_value[$index] = [int]$index_value
-                }
-            }
-            else {
-                $new_value = $item.reg_property_value
-            }
-
-            Set-RegistryValueData -key $item.reg_key `
-                              -item $reg_property `
-                              -itemType $item.reg_property_type `
-                              -value $new_value
-        }
+    catch {
+        error "$($_.exception)"
+        $index++
     }
 }
+
+# dump failed config
+if ( $config.$stage.Count -eq 0 ) {
+    $config.Remove($stage)
+    $excode = 0
+}
+
+if ( $UpdateConfigInPlace ) {
+    $config | ConvertTo-Yaml | Out-File $ConfigFilePath -Force -Encoding utf8
+}
+
+exit $excode
