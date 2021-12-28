@@ -37,9 +37,11 @@ while ( $config.$stage[$index] ) {
     # $LASTEXITCODE = 0
 
     if ( $item.args ) {
+        if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: choco install $($item.name) -y --parms `"$($item.args)`"" }
         $output = & choco install $item.name -y --parms "$($item.args)"
     }
     else {
+        if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: choco install $($item.name) -y" }
         $output = & choco install $item.name -y
     }
 
