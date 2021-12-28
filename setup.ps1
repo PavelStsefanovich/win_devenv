@@ -1,6 +1,7 @@
 [cmdletbinding(HelpUri = "")]
 param (
     [string]$ConfigFilePath,
+    [string]$StartStage,
     [switch]$SkipDependencies
 )
 
@@ -189,6 +190,11 @@ else {
 #--------------------------------------------------
 # EXECUTE SCRIPTS
 foreach ( $stage in $CONFIG.sequence ) {
+
+    # if -StartStage specified, then skip until current stage matches
+    if ( $StartStage -and ($stage -ne $StartStage) ) { continue }
+
+    # run only if stage config exists
     if ( $CONFIG.$stage ) {
         newline
         info "Stage: $stage"
@@ -200,6 +206,7 @@ foreach ( $stage in $CONFIG.sequence ) {
 
                 $arguments = @{
                     'ConfigFilePath'   = $ConfigFilePath;
+                    'StartStage'       = $stage;
                     'SkipDependencies' = ''
                 }
 
@@ -229,11 +236,10 @@ foreach ( $stage in $CONFIG.sequence ) {
 
 #--------------------------------------------------
 # ELAPSED TIME
-$FINISHTIME = Get-Date  
+$FINISHTIME = Get-Date
 $ElapsedTime = $FINISHTIME - $STARTTIME
 newline
 info "SETUP FINISHED in $($ElapsedTime.Minutes) Minutes $($ElapsedTime.Seconds) Seconds."
-
 
 
 #--------------------------------------------------
