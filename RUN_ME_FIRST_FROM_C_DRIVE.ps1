@@ -85,4 +85,4 @@ foreach ( $label in $drives_map.Keys ) {
 
 cp D:\GoogleDrive\stse.pavell\Dev\DevEnv . -Recurse -Force
 cd DevEnv
-& .\setup_dev_env.ps1
+& .\setup.ps1
