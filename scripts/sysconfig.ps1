@@ -29,7 +29,16 @@ while ( $config.$stage[$index] ) {
     if ( !$success_exit_codes ) { $success_exit_codes = @(0) }
     
     if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: $($item.exe) $($item.args)" }
-    $process = run-process $item.exe $item.args -no_console_output
+    try { $process = run-process $item.exe $item.args -no_console_output }
+    catch {
+        if ( $_.exception -like '*Failed to validate parameter <executable>*' ) {
+            $process = @{
+                'errcode' = -1;
+                'stderr'  = "Failed to resolve executable `"$($item.exe)`""
+            }
+        }
+    }
+
     #TODO replace 'errcode' with 'exitcode' after UtilFunctions update 
     if ( $process.errcode -in $success_exit_codes ) {
         $config.$stage.RemoveAt($index)
