@@ -55,7 +55,7 @@ function ContinueAfterRestart {
     param(
         [string]$scriptpath,
         [hashtable]$arguments,
-        [string]$working_directory,
+        [string]$working_directory = $PWD.path,
         [string]$task_name
     )
 
