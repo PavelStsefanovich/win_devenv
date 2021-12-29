@@ -208,5 +208,5 @@ sysconfig:
   exe: py
   args: -m pip install --upgrade pip
 - description: 'installing Python library "pipenv"'
-  exe: pip
-  args: install pipenv
+  exe: py
+  args: -m pip install pipenv
