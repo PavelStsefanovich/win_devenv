@@ -1,5 +1,5 @@
 sequence:
-#- win_features
+- win_features
 - copy
 - registry
 - utils
@@ -168,10 +168,13 @@ chocolatey:
 
 
 packages:
-- url: https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
-  exe: .\bin\wsl_update_x64.msi
-  description: 'installing Linux Kernel Update for WSL2'
-  interactive: true
+- description: 'installing Linux Kernel Update for WSL2'
+  url: https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
+  # TODO Update after fix in UtilityFunctions abspath
+  installer: bin\wsl_update_x64.msi
+  type: msi # or exe
+  interactive: false
+  success_exit_codes: [0,3010]
 
 
 
