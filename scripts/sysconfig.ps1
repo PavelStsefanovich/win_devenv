@@ -20,13 +20,13 @@ if ( !(Get-Module powershell-yaml) ) { Import-Module -Name powershell-yaml -Forc
 $config = cat $ConfigFilePath -Raw | ConvertFrom-Yaml -Ordered
 $index = 0
 
-# Enable features
+# run utilities
 while ( $config.$stage[$index] ) {
     $item = $config.$stage[$index]
     info $item.description -sub
     
     $success_exit_codes = $item.success_exit_codes
-    if ( !$success_exit_codes ) { $success_exit_codes = 0 }
+    if ( !$success_exit_codes ) { $success_exit_codes = @(0) }
     
     if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: $($item.exe) $($item.args)" }
     $process = run-process $item.exe $item.args -no_console_output

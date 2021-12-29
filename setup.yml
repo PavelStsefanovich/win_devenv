@@ -2,10 +2,10 @@ sequence:
 - win_features
 - copy
 - registry
-- utils
 - chocolatey
-# - packages
-# - tools_config
+- packages
+- tools_config
+- sysconfig
 
 
 
@@ -126,23 +126,6 @@ registry:
 
 
 
-utils:
-- description: 'setting close lid action when on AC power to "do nothing"'
-  exe: powercfg
-  args: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
-  success_exit_codes: [0]
-# @PS Moved to win_features
-- description: 'installing Windows feature "VirtualMachinePlatform"'
-  exe: dism
-  args: /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-  success_exit_codes: [0,3010]
-- description: 'installing Windows feature "Microsoft-Windows-Subsystem-Linux"'
-  exe: dism
-  args: /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-  success_exit_codes: [0,3010]
-
-
-
 chocolatey:
 - description: 'installing "Notepad++"'
   name: notepadplusplus
@@ -178,29 +161,43 @@ packages:
 
 
 
-tools_config:
-  restart_required: false
-  script: .\scripts\tools.ps1
-  config:
-    dev_tools:
-    - name: wsl
-      script: .\scripts\wsl.ps1
-      config:
-        default_version: 2
-    - name: vscode
-      script: .\scripts\vscode.ps1
-      config:
-        extensions:
-        - mhutchie.git-graph
-        - ms-vscode.atom-keybindings
-        - ms-vscode.powershell
-        - eamodio.gitlens
-        - ms-azuretools.vscode-docker
-        - ms-dotnettools.csharp
-        - ms-python.python
-        - ms-python.vscode-pylance
-        - ms-vscode-remote.remote-wsl
-        - alexcvzz.vscode-sqlite
-        - Gruntfuggly.todo-tree
-        - L13RARY.l13-diff
-        - monokai.theme-monokai-pro-vscode
+sysconfig:
+- description: 'setting close lid action when on AC power to "do nothing"'
+  exe: powercfg
+  args: -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
+- description: 'setting WSL default version to "2"'
+  exe: wsl
+  args: --set-default-version 2
+- description: 'installing VSCode extension "Git Graph"'
+  exe: code
+  args: --install-extension mhutchie.git-graph --force
+- description: 'installing VSCode extension "Atom Keymap"'
+  exe: code
+  args: --install-extension ms-vscode.atom-keybindings --force
+- description: 'installing VSCode extension "PowerShell"'
+  exe: code
+  args: --install-extension ms-vscode.powershell --force
+- description: 'installing VSCode extension "GitLens"'
+  exe: code
+  args: --install-extension eamodio.gitlens --force
+- description: 'installing VSCode extension "Docker"'
+  exe: code
+  args: --install-extension ms-azuretools.vscode-docker --force
+- description: 'installing VSCode extension "Python"'
+  exe: code
+  args: --install-extension ms-python.python --force
+- description: 'installing VSCode extension "Remote - WSL"'
+  exe: code
+  args: --install-extension ms-vscode-remote.remote-wsl --force
+- description: 'installing VSCode extension "SQLite"'
+  exe: code
+  args: --install-extension alexcvzz.vscode-sqlite --force
+- description: 'installing VSCode extension "Todo Tree"'
+  exe: code
+  args: --install-extension Gruntfuggly.todo-tree --force
+- description: 'installing VSCode extension "Diff Folders"'
+  exe: code
+  args: --install-extension L13RARY.l13-diff --force
+- description: 'installing VSCode extension "Monokai Pro"'
+  exe: code
+  args: --install-extension monokai.theme-monokai-pro-vscode --force
