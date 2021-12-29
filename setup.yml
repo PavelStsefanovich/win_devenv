@@ -147,6 +147,9 @@ chocolatey:
   name: mobaxterm
 - description: 'installing "Google Chrome"'
   name: googlechrome
+- description: 'installing "Python 3.9.0"'
+  name: python
+  options: ['--version','3.9.0']
 
 
 
@@ -157,7 +160,7 @@ packages:
   installer: bin\wsl_update_x64.msi
   type: msi # or exe
   interactive: false
-  success_exit_codes: [0,3010]
+  success_exit_codes: [0, 1641, 3010]
 
 
 
@@ -201,3 +204,9 @@ sysconfig:
 - description: 'installing VSCode extension "Monokai Pro"'
   exe: code
   args: --install-extension monokai.theme-monokai-pro-vscode --force
+- description: 'upgrading Python utility "pip"'
+  exe: py
+  args: -m pip install --upgrade pip
+- description: 'installing Python library "pipenv"'
+  exe: pip
+  args: install pipenv
