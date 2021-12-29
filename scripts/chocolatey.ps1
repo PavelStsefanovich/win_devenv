@@ -33,17 +33,16 @@ while ( $config.$stage[$index] ) {
     $item = $config.$stage[$index]
     info $item.description -sub
 
-    # $success_exit_codes = @(0, 1641, 3010)
-    # $LASTEXITCODE = 0
+    $arguments = @('install', $item.name, '-y')    
+    if ( $item.options ) { $arguments = $arguments + $item.options }
+    if ( $item.args ) { $arguments = $arguments + @('--params', "`"$item.args`"") }
 
-    if ( $item.args ) {
-        if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: choco install $($item.name) -y --parms `"$($item.args)`"" }
-        $output = & choco install $item.name -y --parms "$($item.args)"
+    if ( $IS_VERBOSE ) {
+        $arguments_verbose = $arguments -join(' ')
+        Write-Verbose "EXECUTING: choco $arguments_verbose"
     }
-    else {
-        if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: choco install $($item.name) -y" }
-        $output = & choco install $item.name -y
-    }
+
+    $output = & choco $arguments
 
     $failure_index = $output.IndexOf('Failures')
 
