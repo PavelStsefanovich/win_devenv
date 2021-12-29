@@ -1,2 +1,0 @@
-1. Place local installer executables here.
-2. Update main config .yml file accordingly
