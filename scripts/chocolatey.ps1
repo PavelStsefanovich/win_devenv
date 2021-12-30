@@ -33,7 +33,7 @@ while ( $config.$stage[$index] ) {
     $item = $config.$stage[$index]
     info $item.description -sub
 
-    $arguments = @('install', $item.name, '-y')    
+    $arguments = @('install', $item.name, '-y')
     if ( $item.options ) { $arguments = $arguments + $item.options }
     if ( $item.args ) { $arguments = $arguments + @('--params', "`"$item.args`"") }
 
