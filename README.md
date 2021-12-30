@@ -40,10 +40,10 @@ Progress config file can also be used as a log or status file: after setup scrip
 
 ---
 ### Input Parameters
-Main configuration script takes the following input parameters:
+Main configuration script takes the following input parameters (all parameters are optional):
 
 | Name | Type | Description |
 | ------ | ------ | ------ |
-| ConfigFilePath | string | Path to the config file to use (YAML) |
+| ConfigFilePath | string | Path to the config file to use (YAML) if other than default |
 | StartStage | string | Indicate the stage name under the "sequence" key. Setup script will execute sequence starting with the specified stage to the end of the list |
 | SkipDependencies | switch | Use to skip dependency modules installations on subsequent runs of the setup script |
