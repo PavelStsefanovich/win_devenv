@@ -116,7 +116,7 @@ $IS_VERBOSE = [bool]($PSCmdlet.MyInvocation.BoundParameters.Verbose)
 $MAIN_SCRIPT_FULL_PATH = $PSCommandPath
 $MAIN_SCRIPT_DIR = $PSScriptRoot
 $MAIN_SCRIPT_BASE_NAME = (gi $PSCommandPath).BaseName
-# $WORKSPACE = $PWD.Path
+$WORKDIR = $PWD.Path
 $ScriptsDir = Join-Path $MAIN_SCRIPT_DIR 'scripts'
 $ScheduledTaskName = "runatlogon_$MAIN_SCRIPT_BASE_NAME"
 
@@ -185,7 +185,7 @@ else {
     info "Loading config from file `"$ConfigFilePath`""
     $ConfigFilePath = $ConfigFilePath | abspath -verify
     $CONFIG = cat $ConfigFilePath -Raw | ConvertFrom-Yaml -Ordered
-    $ConfigFilePath = Join-Path $PSScriptRoot "progress_$MAIN_SCRIPT_BASE_NAME`.yml"
+    $ConfigFilePath = Join-Path $WORKDIR "progress_$MAIN_SCRIPT_BASE_NAME`.yml"
     $config | ConvertTo-Yaml | Out-File $ConfigFilePath -Force
 }
 
