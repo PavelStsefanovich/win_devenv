@@ -166,7 +166,6 @@ chocolatey:
 packages:
 - description: 'installing Linux Kernel Update for WSL2'
   url: https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
-  # TODO Update after fix in UtilityFunctions abspath
   installer: .\bin\wsl_update_x64.msi
   type: msi # or exe
   interactive: false

@@ -31,7 +31,7 @@ while ( $config.$stage[$index] ) {
 
     if ( ! (Test-Path $installer_filepath) ) {
         # download installer
-        if ( $item.url ) {        
+        if ( $item.url ) {
             try {
                 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
                 $wc = New-Object System.Net.WebClient
@@ -67,7 +67,7 @@ while ( $config.$stage[$index] ) {
         if ( $item.interactive ) {
             warning " Interactive Install: follow prompts of the external installer" -noprefix
         }
-        
+
         # execute
         if ( $IS_VERBOSE ) { Write-Verbose "EXECUTING: `"$installer_filepath`" $arguments" }
         $process = start $installer_filepath `
