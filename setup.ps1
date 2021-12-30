@@ -145,6 +145,9 @@ if ( !$SkipDependencies ) {
     Write-Host "   PackageManagement module" -ForegroundColor DarkGray
     Install-Module -Name PackageManagement -Force -MinimumVersion 1.4.6 -Scope CurrentUser -WarningAction SilentlyContinue
 
+    Write-Host "   PowerShellGet module" -ForegroundColor DarkGray
+    Install-Module -Name PowerShellGet -Force -Scope AllUsers -AllowClobber -WarningAction SilentlyContinue
+
     Write-Host "   UtilityFunctions module" -ForegroundColor DarkGray
     Install-Module -Name UtilityFunctions -Force -Scope CurrentUser -WarningAction SilentlyContinue
 
