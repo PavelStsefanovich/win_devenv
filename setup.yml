@@ -66,6 +66,16 @@ registry:
   property: LongPathsEnabled
   type: DWORD
   value: 1
+- description: 'setting SchUseStrongCrypto to "1"'
+  key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319
+  property: SchUseStrongCrypto
+  type: DWORD
+  value: 1
+- description: 'setting SchUseStrongCrypto (Wow6432Node) to "1"'
+  key: HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319
+  property: SchUseStrongCrypto
+  type: DWORD
+  value: 1
 
 # ui_customizations
 - description: 'removing Cortana icon'
@@ -157,7 +167,7 @@ packages:
 - description: 'installing Linux Kernel Update for WSL2'
   url: https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
   # TODO Update after fix in UtilityFunctions abspath
-  installer: bin\wsl_update_x64.msi
+  installer: .\bin\wsl_update_x64.msi
   type: msi # or exe
   interactive: false
   success_exit_codes: [0, 1641, 3010]
