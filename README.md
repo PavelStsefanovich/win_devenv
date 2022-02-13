@@ -1,6 +1,6 @@
-# DevEnv
+# win_devenv
 
-*DevEnv is a suite of PowerShell scripts that automate configuration of various aspects of development environment on Windows.*
+***win_devenv*** *is a suite of PowerShell scripts that automate configuration of various aspects of development environment on Windows.*
 
 ---
 ### Currently included:
