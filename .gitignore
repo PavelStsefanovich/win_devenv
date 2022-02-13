@@ -11,3 +11,4 @@ notes.txt
 *.stage
 .vscode/*
 progress_*
+personal*/*
