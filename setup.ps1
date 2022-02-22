@@ -143,7 +143,7 @@ if ( !$SkipDependencies ) {
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force | Out-Null
 
     Write-Host "   PackageManagement module" -ForegroundColor DarkGray
-    Install-Module -Name PackageManagement -Force -MinimumVersion 1.4.6 -Scope CurrentUser -WarningAction SilentlyContinue
+    Install-Module -Name PackageManagement -Force -MinimumVersion 1.4.6 -Scope CurrentUser -AllowClobber -WarningAction SilentlyContinue
 
     Write-Host "   PowerShellGet module" -ForegroundColor DarkGray
     Install-Module -Name PowerShellGet -Force -Scope AllUsers -AllowClobber -WarningAction SilentlyContinue
