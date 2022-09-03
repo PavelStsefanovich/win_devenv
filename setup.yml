@@ -157,6 +157,8 @@ chocolatey:
   name: mobaxterm
 - description: 'installing "Google Chrome"'
   name: googlechrome
+- description: 'installing "Pwsh"'
+  name: pwsh  
 - description: 'installing "Python 3.9.0"'
   name: python
   options: ['--version','3.9.0']
