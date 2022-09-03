@@ -7,6 +7,7 @@ if (Test-Path($ChocolateyProfile)) {
 
 # ENVIRONMENT VARIABLES
 # $env:PSModulePath = $env:PSModulePath.TrimEnd(';') + ';<additional_module_path>'
+# $env:path = $env:path.trim(';') + ';<some_path>'
 
 
 
